@@ -330,22 +330,40 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        private void dataGridView1_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        private class DateComparer : System.Collections.IComparer
         {
-            // Try to sort based on the cells in the current column.
-            try
-            {
+            private static int sortOrderModifier = 1;
 
-                DateTime dt1 = DateTime.Parse(e.CellValue1, CultureInfo.CurrentCulture);
-                DateTime dt2 = DateTime.Parse(e.CellValue2, CultureInfo.CurrentCulture);
-            }
-            catch (Exception e)
+            public DateComparer(SortOrder sortOrder)
             {
-                MyLogger.DebugLog(e.Message);
+                if (sortOrder == SortOrder.Descending)
+                {
+                    sortOrderModifier = -1;
+                }
+                else if (sortOrder == SortOrder.Ascending)
+                {
+                    sortOrderModifier = 1;
+                }
             }
 
-            e.SortResult = DateTime.Compare(dt1, dt2);
-            e.Handled = true;
+            public int Compare(object x, object y)
+            {
+                DataGridViewRow row1 = (DataGridViewRow)x;
+                DataGridViewRow row2 = (DataGridViewRow)y;
+
+                try
+                {
+                    DateTime dt1 = DateTime.Parse(row1.Cells["Date"].Value.ToString(), CultureInfo.CurrentCulture);
+                    DateTime dt2 = DateTime.Parse(row2.Cells["Date"].Value.ToString(), CultureInfo.CurrentCulture);
+                    int CompareResult = DateTime.Compare(dt1, dt2);
+                    return CompareResult * sortOrderModifier;
+                }
+                catch (Exception e)
+                {
+                    MyLogger.DebugLog(e.Message);
+                    return 0;
+                }
+            }
         }
 
 
@@ -379,7 +397,7 @@ namespace HomeServerConsoleTab.WebLogs
             if (newColumn.Name == "Date")
             {
                 //date sort
-
+                dataGridView1.Sort(new DateComparer((SortOrder)direction));
             }
             else
             {

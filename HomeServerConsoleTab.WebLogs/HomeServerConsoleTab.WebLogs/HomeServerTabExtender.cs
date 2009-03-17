@@ -6,10 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.IO;
-
-//To Do:
-// figure out how to install it and ship it
-
+using System.Diagnostics;
 
 namespace HomeServerConsoleTab.WebLogs
 {
@@ -27,9 +24,23 @@ namespace HomeServerConsoleTab.WebLogs
         public string TabText { get { return "Web Logs"; } }
         public Bitmap TabImage { get { return Properties.Resources.logs2; } }
         public Control TabControl { get { return tabControl; } }
+
         public bool GetHelp()
         {
-            return false;
+            string msgBoxTxt;
+            string version;
+
+            //get the version info
+            Assembly me = Assembly.GetExecutingAssembly();
+            FileVersionInfo fv = FileVersionInfo.GetVersionInfo(me.Location);
+            version = fv.ProductVersion.ToString();
+
+            msgBoxTxt = "WebLogs Add-In for Windows Home Server\n\nVersion: " + version + 
+                "\nFor more help, please go to http://mattfischer.com/whs/help.html";
+
+            MessageBox.Show(msgBoxTxt, "WebLogs", MessageBoxButtons.OK);
+
+            return true;
         }
 
         //??? where did this come from?        
