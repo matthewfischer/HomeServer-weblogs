@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product
+      Name="Web Logs"
+      Id="25FF2855-1B50-463A-905F-21AAFF03F1D1"
+      UpgradeCode="92EBA47A-A226-40FA-B616-896C7794F5AC"
+      Manufacturer="Matt Fischer"
+      Version="1.0.2.0"
+      Language="1033">
+    <Package
+      Id="FA97D2A1-612B-4847-ADCB-BC7E7B853BA0"
+      Manufacturer="Matt Fischer"
+      InstallerVersion="200"
+      Platforms="Intel"
+      Languages="1033"
+      Compressed="yes"
+      SummaryCodepage="1252" />
+
+    <Media Id="1" Cabinet="InstallWebLogs.cab" EmbedCab="yes" />
+
+    <Property Id="WHSLogo">1</Property>
+
+    <Condition Message="[ProductName] requires Windows Home Server. For more information, please refer to the User Guide.">VersionNT = 502</Condition>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="WHS" Name="Windows Home Server">
+          <Component Id="HomeServerConsoleTab.WebLogs.dll" Guid="3696A136-004F-43BC-9E30-2C74413993BA">
+            <File Id="HomeServerConsoleTab.WebLogs.dll" Name="HomeServerConsoleTab.WebLogs.dll" Source="..\HomeServerConsoleTab.WebLogs\bin\Release\HomeServerConsoleTab.WebLogs.dll" Vital="yes" KeyPath="yes" DiskId="1"/>
+          </Component>
+        </Directory>
+      </Directory>
+    </Directory>
+    <Feature Id="DefaultFeature" Title="WebLogs" Level="1">
+      <ComponentRef Id="HomeServerConsoleTab.WebLogs.dll" />
+    </Feature>
+  </Product>
+</Wix>
