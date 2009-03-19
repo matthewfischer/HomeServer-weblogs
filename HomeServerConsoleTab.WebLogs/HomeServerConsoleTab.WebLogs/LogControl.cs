@@ -54,6 +54,7 @@ namespace HomeServerConsoleTab.WebLogs
 
             InitializeComponent();
             textBox1.Text = defaultMaxEntries.ToString();
+            dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
         }
 
         private void LoadLogsWorker(object sender, DoWorkEventArgs e)
@@ -118,20 +119,8 @@ namespace HomeServerConsoleTab.WebLogs
         private void AddTableRow(DataTable table, string[] entry)
         {
             DataRow row = table.NewRow();
-            DateTime iis_dt = ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
-
             row["IP"] = entry[(int)IISLog.c_ip];
-
-            if (iis_dt != DateTime.MinValue)
-            {
-                row["Date"] = iis_dt.ToShortDateString();
-                row["Time"] = iis_dt.ToShortTimeString();
-            }
-            else
-            {
-                row["Date"] = "unknown";
-                row["Time"] = "unknown";
-            }
+            row["Date"] = ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
             row["User"] = entry[(int)IISLog.cs_username];
             row["URIStem"] = entry[(int)IISLog.cs_uri_stem];
             table.Rows.Add(row);
@@ -145,8 +134,7 @@ namespace HomeServerConsoleTab.WebLogs
             DataTable logDataTable = new DataTable("Logs");
 
             logDataTable.Columns.Add("IP", typeof(string));
-            logDataTable.Columns.Add("Date", typeof(string));
-            logDataTable.Columns.Add("Time", typeof(string));
+            logDataTable.Columns.Add("Date", typeof(DateTime));
             logDataTable.Columns.Add("User", typeof(string));
             logDataTable.Columns.Add("URIStem", typeof(string));
 
@@ -328,85 +316,6 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 LoadLogs();
             }
-        }
-
-        private class DateComparer : System.Collections.IComparer
-        {
-            private static int sortOrderModifier = 1;
-
-            public DateComparer(SortOrder sortOrder)
-            {
-                if (sortOrder == SortOrder.Descending)
-                {
-                    sortOrderModifier = -1;
-                }
-                else if (sortOrder == SortOrder.Ascending)
-                {
-                    sortOrderModifier = 1;
-                }
-            }
-
-            public int Compare(object x, object y)
-            {
-                DataGridViewRow row1 = (DataGridViewRow)x;
-                DataGridViewRow row2 = (DataGridViewRow)y;
-
-                try
-                {
-                    DateTime dt1 = DateTime.Parse(row1.Cells["Date"].Value.ToString(), CultureInfo.CurrentCulture);
-                    DateTime dt2 = DateTime.Parse(row2.Cells["Date"].Value.ToString(), CultureInfo.CurrentCulture);
-                    int CompareResult = DateTime.Compare(dt1, dt2);
-                    return CompareResult * sortOrderModifier;
-                }
-                catch (Exception e)
-                {
-                    MyLogger.DebugLog(e.Message);
-                    return 0;
-                }
-            }
-        }
-
-
-        private void dataGridView1_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            DataGridViewColumn newColumn = dataGridView1.Columns[e.ColumnIndex];
-            DataGridViewColumn oldColumn = dataGridView1.SortedColumn;
-            ListSortDirection direction;
-
-            // If oldColumn is null, then the DataGridView is not sorted.
-            if (oldColumn != null)
-            {
-                // Sort the same column again, reversing the SortOrder.
-                if (oldColumn == newColumn &&
-                    dataGridView1.SortOrder == SortOrder.Ascending)
-                {
-                    direction = ListSortDirection.Descending;
-                }
-                else
-                {
-                    // Sort a new column and remove the old SortGlyph.
-                    direction = ListSortDirection.Ascending;
-                    oldColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
-                }
-            }
-            else
-            {
-                direction = ListSortDirection.Ascending;
-            }
-
-            if (newColumn.Name == "Date")
-            {
-                //date sort
-                dataGridView1.Sort(new DateComparer((SortOrder)direction));
-            }
-            else
-            {
-                //normal sort
-                dataGridView1.Sort(newColumn, direction);
-            }
-            newColumn.HeaderCell.SortGlyphDirection =
-                direction == ListSortDirection.Ascending ?
-                SortOrder.Ascending : SortOrder.Descending;
         }
     }
 }
