@@ -35,8 +35,11 @@ namespace HomeServerConsoleTab.WebLogs
             FileVersionInfo fv = FileVersionInfo.GetVersionInfo(me.Location);
             version = fv.ProductVersion.ToString();
 
+            string ipBlockCredits = "\nWith IP Blocking code courtesy of:\nGeorge Atkins, Lee Whitney, and www.okean.com.\n" + 
+                "Source available from: http://www.hdgreetings.com/other/Block-IP-IIS";
+
             msgBoxTxt = "WebLogs Add-In for Windows Home Server\n\nVersion: " + version + 
-                "\nFor more help, please go to http://mattfischer.com/whs/help.html";
+                "\nFor more help, please go to http://mattfischer.com/whs/help.html\n\n" + ipBlockCredits;
 
             MessageBox.Show(msgBoxTxt, "WebLogs", MessageBoxButtons.OK);
 

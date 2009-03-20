@@ -41,9 +41,16 @@ namespace HomeServerConsoleTab.WebLogs
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogControl));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.IP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.User = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.IPWhoIs = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.geoIP = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.dns = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Block = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.URIStem = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -55,13 +62,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.IP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.User = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.IPWhoIs = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.geoIP = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dns = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.URIStem = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.blockList = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.consoleToolBar1.SuspendLayout();
@@ -74,14 +75,14 @@ namespace HomeServerConsoleTab.WebLogs
             this.dataGridView1.AllowUserToOrderColumns = true;
             this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.IP,
@@ -90,38 +91,115 @@ namespace HomeServerConsoleTab.WebLogs
             this.IPWhoIs,
             this.geoIP,
             this.dns,
+            this.Block,
             this.URIStem});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(0, 57);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dataGridView1.Size = new System.Drawing.Size(979, 480);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
+            // IP
+            // 
+            this.IP.DataPropertyName = "IP";
+            this.IP.HeaderText = "IP";
+            this.IP.Name = "IP";
+            this.IP.ReadOnly = true;
+            this.IP.ToolTipText = "IP address of the requestor.";
+            this.IP.Width = 90;
+            // 
+            // Date
+            // 
+            this.Date.DataPropertyName = "Date";
+            this.Date.HeaderText = "Date / Time";
+            this.Date.Name = "Date";
+            this.Date.ReadOnly = true;
+            this.Date.ToolTipText = "Date of the request converted to local date";
+            this.Date.Width = 140;
+            // 
+            // User
+            // 
+            this.User.DataPropertyName = "User";
+            this.User.HeaderText = "User";
+            this.User.Name = "User";
+            this.User.ReadOnly = true;
+            this.User.ToolTipText = "The user name for this request.  Will be blank if this no user was logged in.";
+            this.User.Width = 140;
+            // 
+            // IPWhoIs
+            // 
+            this.IPWhoIs.HeaderText = "whois Lookup";
+            this.IPWhoIs.Name = "IPWhoIs";
+            this.IPWhoIs.ReadOnly = true;
+            this.IPWhoIs.Text = "whois";
+            this.IPWhoIs.ToolTipText = "Perform a whois lookup on this IP address.";
+            this.IPWhoIs.UseColumnTextForButtonValue = true;
+            this.IPWhoIs.Width = 80;
+            // 
+            // geoIP
+            // 
+            this.geoIP.HeaderText = "Geo Locate IP";
+            this.geoIP.Name = "geoIP";
+            this.geoIP.ReadOnly = true;
+            this.geoIP.Text = "GeoLocate IP";
+            this.geoIP.ToolTipText = "Geographically locate the requestor\'s IP";
+            this.geoIP.UseColumnTextForButtonValue = true;
+            this.geoIP.Width = 85;
+            // 
+            // dns
+            // 
+            this.dns.HeaderText = "DNS Lookup";
+            this.dns.Name = "dns";
+            this.dns.ReadOnly = true;
+            this.dns.Text = "DNS";
+            this.dns.ToolTipText = "Perform a DNS lookup on the requestor\'s IP";
+            this.dns.UseColumnTextForButtonValue = true;
+            this.dns.Width = 75;
+            // 
+            // Block
+            // 
+            this.Block.HeaderText = "Block IP";
+            this.Block.Name = "Block";
+            this.Block.ReadOnly = true;
+            this.Block.Text = "Block IP";
+            this.Block.ToolTipText = "Advanced: Block this IP address in IIS.";
+            this.geoIP.UseColumnTextForButtonValue = true;
+            this.Block.Width = 54;
+            // 
+            // URIStem
+            // 
+            this.URIStem.DataPropertyName = "URIStem";
+            this.URIStem.HeaderText = "URL";
+            this.URIStem.Name = "URIStem";
+            this.URIStem.ReadOnly = true;
+            this.URIStem.ToolTipText = "Requested URL";
+            this.URIStem.Width = 313;
+            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(502, 34);
+            this.checkBox1.Location = new System.Drawing.Point(472, 34);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(103, 17);
             this.checkBox1.TabIndex = 2;
@@ -134,7 +212,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.checkBox2.AutoSize = true;
             this.checkBox2.Checked = true;
             this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(361, 34);
+            this.checkBox2.Location = new System.Drawing.Point(339, 34);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(126, 17);
             this.checkBox2.TabIndex = 3;
@@ -145,7 +223,7 @@ namespace HomeServerConsoleTab.WebLogs
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(234, 34);
+            this.checkBox3.Location = new System.Drawing.Point(220, 34);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(112, 17);
             this.checkBox3.TabIndex = 4;
@@ -212,7 +290,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.checkBox4.AutoSize = true;
             this.checkBox4.Checked = true;
             this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox4.Location = new System.Drawing.Point(620, 34);
+            this.checkBox4.Location = new System.Drawing.Point(582, 34);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(211, 17);
             this.checkBox4.TabIndex = 9;
@@ -224,7 +302,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.textBox1.Location = new System.Drawing.Point(134, 32);
             this.textBox1.MaxLength = 6;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(77, 20);
+            this.textBox1.Size = new System.Drawing.Size(65, 20);
             this.textBox1.TabIndex = 10;
             this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyUp);
             // 
@@ -237,76 +315,21 @@ namespace HomeServerConsoleTab.WebLogs
             this.label1.TabIndex = 11;
             this.label1.Text = "Maximum Entries to Load:";
             // 
-            // IP
+            // blockList
             // 
-            this.IP.DataPropertyName = "IP";
-            this.IP.HeaderText = "IP";
-            this.IP.Name = "IP";
-            this.IP.ReadOnly = true;
-            this.IP.ToolTipText = "IP address of the requestor.";
-            this.IP.Width = 90;
-            // 
-            // Date
-            // 
-            this.Date.DataPropertyName = "Date";
-            this.Date.HeaderText = "Date / Time";
-            this.Date.Name = "Date";
-            this.Date.ReadOnly = true;
-            this.Date.ToolTipText = "Date of the request converted to local date";
-            this.Date.Width = 160;
-            // 
-            // User
-            // 
-            this.User.DataPropertyName = "User";
-            this.User.HeaderText = "User";
-            this.User.Name = "User";
-            this.User.ReadOnly = true;
-            this.User.ToolTipText = "The user name for this request.  Will be blank if this no user was logged in.";
-            this.User.Width = 150;
-            // 
-            // IPWhoIs
-            // 
-            this.IPWhoIs.HeaderText = "whois Lookup";
-            this.IPWhoIs.Name = "IPWhoIs";
-            this.IPWhoIs.ReadOnly = true;
-            this.IPWhoIs.Text = "whois";
-            this.IPWhoIs.ToolTipText = "Perform a whois lookup on this IP address.";
-            this.IPWhoIs.UseColumnTextForButtonValue = true;
-            this.IPWhoIs.Width = 80;
-            // 
-            // geoIP
-            // 
-            this.geoIP.HeaderText = "Geo Locate IP";
-            this.geoIP.Name = "geoIP";
-            this.geoIP.ReadOnly = true;
-            this.geoIP.Text = "GeoLocate IP";
-            this.geoIP.ToolTipText = "Geographically locate the requestor\'s IP";
-            this.geoIP.UseColumnTextForButtonValue = true;
-            this.geoIP.Width = 89;
-            // 
-            // dns
-            // 
-            this.dns.HeaderText = "DNS Lookup";
-            this.dns.Name = "dns";
-            this.dns.ReadOnly = true;
-            this.dns.Text = "DNS";
-            this.dns.ToolTipText = "Perform a DNS lookup on the requestor\'s IP";
-            this.dns.UseColumnTextForButtonValue = true;
-            this.dns.Width = 75;
-            // 
-            // URIStem
-            // 
-            this.URIStem.DataPropertyName = "URIStem";
-            this.URIStem.HeaderText = "URL";
-            this.URIStem.Name = "URIStem";
-            this.URIStem.ReadOnly = true;
-            this.URIStem.ToolTipText = "Requested URL";
-            this.URIStem.Width = 333;
+            this.blockList.Location = new System.Drawing.Point(872, 34);
+            this.blockList.Name = "blockList";
+            this.blockList.Size = new System.Drawing.Size(107, 23);
+            this.blockList.TabIndex = 12;
+            this.blockList.Text = "List Blocked IPs";
+            this.blockList.UseVisualStyleBackColor = true;
+            this.blockList.Click += new System.EventHandler(this.blockList_Click);
             // 
             // LogControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.blockList);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.checkBox4);
@@ -349,6 +372,8 @@ namespace HomeServerConsoleTab.WebLogs
         private DataGridViewButtonColumn IPWhoIs;
         private DataGridViewButtonColumn geoIP;
         private DataGridViewButtonColumn dns;
+        private DataGridViewButtonColumn Block;
         private DataGridViewTextBoxColumn URIStem;
+        private Button blockList;
     }
 }

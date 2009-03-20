@@ -11,6 +11,7 @@ using Microsoft.HomeServer.Extensibility;
 using Microsoft.HomeServer.Controls;
 using System.Security.Permissions;
 using Microsoft.Win32;
+using IISIP;
 
 
 namespace HomeServerConsoleTab.WebLogs
@@ -29,6 +30,7 @@ namespace HomeServerConsoleTab.WebLogs
         private const String countText = "Showing {0} logs out of {1} total entries.";
         private const String updatingString = "Updating display, please wait...";
         private const int defaultMaxEntries = 2000;
+        private IIsWebSite rootSite = null;
 
         private IConsoleServices m_CS;
         private DataSet logEntries;
@@ -55,6 +57,31 @@ namespace HomeServerConsoleTab.WebLogs
             InitializeComponent();
             textBox1.Text = defaultMaxEntries.ToString();
             dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
+
+            SetupIPBlocking();
+        }
+
+        private void SetupIPBlocking()
+        {
+            List<IIsWebSite> iisWebSiteList = IISMetaBase.GetWebSites();
+            foreach (IIsWebSite site in iisWebSiteList)
+            {
+                if (site.SiteName.Equals("IIS Root"))
+                {
+                    rootSite = site;
+                    break;
+                }
+            }
+            if (rootSite == null)
+            {
+                MyLogger.Log(EventLogEntryType.Warning, "Cannot locate the IIS Root site, IP blocking will be disabled.");
+                DisableBlockButton();
+            }
+        }
+
+        private void DisableBlockButton()
+        {
+            //http://msdn.microsoft.com/en-us/library/ms171619.aspx
         }
 
         private void LoadLogsWorker(object sender, DoWorkEventArgs e)
@@ -178,11 +205,6 @@ namespace HomeServerConsoleTab.WebLogs
             backgroundWorker.RunWorkerAsync();
         }
 
-        public bool GetHelp()
-        {
-            return false;
-        }
-
         public void DisplayLogs(BindingSource b)
         {
             this.dataGridView1.DataSource = b;
@@ -288,6 +310,18 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
+        private void BlockIPOnAllSites(string ip)
+        {
+            if (rootSite == null)
+            {
+                MessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", "Web Logs", MessageBoxButtons.OK);
+                return;
+            }
+            else {
+                rootSite.BlockIpAddress(new IPAddressV4(ip));
+            }            
+        }
+
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (dataGridView1.Columns[e.ColumnIndex].Name == "IPWhoIs")
@@ -301,6 +335,11 @@ namespace HomeServerConsoleTab.WebLogs
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "dns")
             {
                 OpenWebpage(String.Format(dnsUrl, dataGridView1.Rows[e.RowIndex].Cells["IP"].Value));
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "Block")
+            {
+                MyLogger.Log(EventLogEntryType.Information,"blocking IP address: " + dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                BlockIPOnAllSites(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
             }
         }
 
@@ -316,6 +355,11 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 LoadLogs();
             }
+        }
+
+        private void blockList_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("load new form here!");
         }
     }
 }

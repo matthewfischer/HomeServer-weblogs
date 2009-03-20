@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeServerConsoleTab.WebLog
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WebLogsInstaller", "WebLogsInstaller\WebLogsInstaller.wixproj", "{C5A23568-67B0-43FF-8F13-5535C8480C8F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IISIP", "IISIP\IISIP.csproj", "{552C4EC5-772A-42E9-A5FC-49C81502D75C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,16 @@ Global
 		{C5A23568-67B0-43FF-8F13-5535C8480C8F}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C5A23568-67B0-43FF-8F13-5535C8480C8F}.Release|x86.ActiveCfg = Release|x86
 		{C5A23568-67B0-43FF-8F13-5535C8480C8F}.Release|x86.Build.0 = Release|x86
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

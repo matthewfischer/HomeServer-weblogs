@@ -119,12 +119,6 @@ namespace IISIP
             ValidateUI();
         }
 
-        private void menuItem_About_Click(object sender, EventArgs e)
-        {
-            var aboutForm = new AboutForm();
-            aboutForm.ShowDialog();
-        }
-
         private void menuItem_Exit_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -457,10 +451,5 @@ namespace IISIP
             }
         }
 
-        private void scanEventLog_menuItem_Click(object sender, EventArgs e)
-        {
-            var scanLogForm = new ScanLogForm();
-            scanLogForm.ShowDialog(this);
-        }
     }
 }

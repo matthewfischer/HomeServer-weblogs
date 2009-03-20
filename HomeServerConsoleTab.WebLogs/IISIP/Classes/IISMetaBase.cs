@@ -8,7 +8,7 @@ using System.DirectoryServices;
 
 namespace IISIP
 {
-    internal class IISMetaBase
+    public class IISMetaBase
     {
         /// <summary>
         /// Returns a list of all IIS Sites on the server
