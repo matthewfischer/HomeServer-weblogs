@@ -69,6 +69,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockedSites.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BlockedSites.Designer.cs">
+      <DependentUpon>BlockedSites.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataGridViewDisabledButton.cs" />
     <Compile Include="HomeServerTabExtender.cs" />
     <Compile Include="IISLog.cs" />
     <Compile Include="LogControl.cs">
@@ -94,6 +101,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BlockedSites.resx">
+      <DependentUpon>BlockedSites.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="LogControl.resx">
       <DependentUpon>LogControl.cs</DependentUpon>
       <SubType>Designer</SubType>

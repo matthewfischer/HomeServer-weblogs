@@ -8,6 +8,12 @@ using System.Reflection;
 using System.IO;
 using System.Diagnostics;
 
+//Stuff to Fix:
+//1) Disable block button on blocked IPs
+//2) Display that the IP is blocked somehow
+//3) Figure out random crashes
+//4) Figure out how to share the blocked IP list
+
 namespace HomeServerConsoleTab.WebLogs
 {
     public class HomeServerTabExtender : IConsoleTab

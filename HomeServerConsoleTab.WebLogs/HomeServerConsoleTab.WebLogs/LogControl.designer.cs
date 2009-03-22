@@ -73,6 +73,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AllowUserToOrderColumns = true;
+            this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -182,8 +183,8 @@ namespace HomeServerConsoleTab.WebLogs
             this.Block.ReadOnly = true;
             this.Block.Text = "Block IP";
             this.Block.ToolTipText = "Advanced: Block this IP address in IIS.";
-            this.geoIP.UseColumnTextForButtonValue = true;
-            this.Block.Width = 54;
+            this.Block.UseColumnTextForButtonValue = true;
+            this.Block.Width = 55;
             // 
             // URIStem
             // 

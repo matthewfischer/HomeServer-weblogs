@@ -34,12 +34,18 @@ namespace HomeServerConsoleTab.WebLogs
 
         private IConsoleServices m_CS;
         private DataSet logEntries;
-
         private int showCount = 0;
 
         public LogControl(IConsoleServices cs)
         {
             m_CS = cs;
+            SetupDebugLogging();
+            InitializeComponent();
+            SetupIPBlocking();
+        }
+
+        private void SetupDebugLogging()
+        {          
             try
             {
                 RegistryKey rk = Registry.LocalMachine;
@@ -53,12 +59,6 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 MyLogger.Log(EventLogEntryType.Warning, "Error reading the debug logging level\n\n" + e.Message);
             }
-
-            InitializeComponent();
-            textBox1.Text = defaultMaxEntries.ToString();
-            dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
-
-            SetupIPBlocking();
         }
 
         private void SetupIPBlocking()
@@ -75,14 +75,17 @@ namespace HomeServerConsoleTab.WebLogs
             if (rootSite == null)
             {
                 MyLogger.Log(EventLogEntryType.Warning, "Cannot locate the IIS Root site, IP blocking will be disabled.");
-                DisableBlockButton();
+                DisableBlockButtons();
+                blockList.Enabled = false;
             }
         }
 
-        private void DisableBlockButton()
+        private void DisableBlockButtons()
         {
-            //http://msdn.microsoft.com/en-us/library/ms171619.aspx
+            //(dataGridView1.Columns["Block"] as DataGridViewDisableButtonColumn).Enabled = false;
         }
+
+        #region DataHandlerAndLoader
 
         private void LoadLogsWorker(object sender, DoWorkEventArgs e)
         {
@@ -213,8 +216,14 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void LogControl_Load(object sender, EventArgs e)
         {
+            textBox1.Text = defaultMaxEntries.ToString();
+            dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
             LoadLogs();
         }
+        
+        #endregion
+
+        #region RowHideShow
 
         /// <summary>
         /// walks the data and hides or shows rows based on the state of the check-boxes.
@@ -296,6 +305,8 @@ namespace HomeServerConsoleTab.WebLogs
             //hide or show media collector requests
             HideOrShowRows();
         }
+        
+        #endregion
 
         private void OpenWebpage(string url)
         {
@@ -359,7 +370,8 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void blockList_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("load new form here!");
+            BlockedSites bs = new BlockedSites(rootSite);
+            bs.Show();
         }
     }
 }
