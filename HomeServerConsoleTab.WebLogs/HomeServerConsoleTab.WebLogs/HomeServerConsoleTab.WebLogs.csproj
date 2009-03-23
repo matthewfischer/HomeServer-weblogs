@@ -130,7 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\logs2.ico" />
-    <Content Include="WebLogsInstaller.wxs" />
     <Content Include="Resources\icon-reload.gif" />
     <None Include="Resources\logs2.gif" />
   </ItemGroup>
