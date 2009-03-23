@@ -10,32 +10,35 @@ using IISIP;
 
 namespace HomeServerConsoleTab.WebLogs
 {
-    public partial class BlockedSites : Form
+    public partial class BlockedSitesForm : Form
     {
-        IIsWebSite site;
+        
         private DataSet ipDataSet;
         private BindingSource ipBinding;
-        private List<IPAddressV4> blockedSites;
+        
+        private BlockedIPs blockedIPs = BlockedIPs.Instance;
 
-        public BlockedSites(IIsWebSite ws)
+        public BlockedSitesForm()
         {
             InitializeComponent();
-            site = ws;
+            if (blockedIPs == null)
+            {
+                MyLogger.Log(System.Diagnostics.EventLogEntryType.Warning, "crap, it's null!");
+            }
             InitializeData();
         }
 
         private void InitializeData()
         {
-            blockedSites = site.GetBlockedIpAddresses();
-
-            if (blockedSites.Count == 0)
+            if (blockedIPs.blockedSites.Count == 0)
             {
                 toolStripStatusLabel1.Text = "No sites currently blocked.";
                 this.unblockAllButton.Enabled = false;
+                this.removeDupesButton.Enabled = false;
             }
             else
             {
-                ipDataSet = BuildDataTable(blockedSites);
+                ipDataSet = BuildDataTable(blockedIPs.blockedSites);
                 if (ipBinding == null)
                 {
                     ipBinding = new BindingSource(ipDataSet, "IP");
@@ -45,7 +48,7 @@ namespace HomeServerConsoleTab.WebLogs
                     ipBinding.DataSource = ipDataSet;
                 }
                 DisplayBlocks(ipBinding);
-                toolStripStatusLabel1.Text = "Currently blocking " + blockedSites.Count + " sites.";
+                toolStripStatusLabel1.Text = "Currently blocking " + blockedIPs.blockedSites.Count + " sites.";
             }    
         }
 
@@ -85,7 +88,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void unblockAllButton_Click(object sender, EventArgs e)
         {
-            site.UnBlockAllIpAddresses();
+            blockedIPs.rootSite.UnBlockAllIpAddresses();
             InitializeData();
         }
 
@@ -93,9 +96,16 @@ namespace HomeServerConsoleTab.WebLogs
         {
             if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
             {
-                site.UnBlockIpAddress(new IPAddressV4(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()));
+                blockedIPs.rootSite.UnBlockIpAddress(new IPAddressV4(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()));
                 InitializeData();
             }
+        }
+
+        private void removeDupesButton_Click(object sender, EventArgs e)
+        {
+            int dupes = blockedIPs.RemoveDupes();
+            MessageBox.Show("Removed " + dupes + " duplicate entries.", "Web Logs", MessageBoxButtons.OK);
+            InitializeData();
         }
     }
 }

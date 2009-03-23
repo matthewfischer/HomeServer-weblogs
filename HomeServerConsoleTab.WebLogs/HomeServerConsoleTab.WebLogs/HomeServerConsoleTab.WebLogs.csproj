@@ -30,6 +30,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ApplicationIcon>Resources\logs2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -69,13 +70,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BlockedSites.cs">
+    <Compile Include="BlockedIPs.cs" />
+    <Compile Include="BlockedSitesForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="BlockedSites.Designer.cs">
-      <DependentUpon>BlockedSites.cs</DependentUpon>
+    <Compile Include="BlockedSitesForm.Designer.cs">
+      <DependentUpon>BlockedSitesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataGridViewDisabledButton.cs" />
     <Compile Include="HomeServerTabExtender.cs" />
     <Compile Include="IISLog.cs" />
     <Compile Include="LogControl.cs">
@@ -101,8 +102,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="BlockedSites.resx">
-      <DependentUpon>BlockedSites.cs</DependentUpon>
+    <EmbeddedResource Include="BlockedSitesForm.resx">
+      <DependentUpon>BlockedSitesForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="LogControl.resx">
@@ -128,6 +129,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\logs2.ico" />
     <Content Include="WebLogsInstaller.wxs" />
     <Content Include="Resources\icon-reload.gif" />
     <None Include="Resources\logs2.gif" />

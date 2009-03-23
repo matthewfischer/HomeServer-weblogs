@@ -30,11 +30,12 @@ namespace HomeServerConsoleTab.WebLogs
         private const String countText = "Showing {0} logs out of {1} total entries.";
         private const String updatingString = "Updating display, please wait...";
         private const int defaultMaxEntries = 2000;
-        private IIsWebSite rootSite = null;
-
+        
         private IConsoleServices m_CS;
         private DataSet logEntries;
         private int showCount = 0;
+
+        private BlockedIPs blockedIPs = BlockedIPs.Instance;
 
         public LogControl(IConsoleServices cs)
         {
@@ -62,21 +63,11 @@ namespace HomeServerConsoleTab.WebLogs
         }
 
         private void SetupIPBlocking()
-        {
-            List<IIsWebSite> iisWebSiteList = IISMetaBase.GetWebSites();
-            foreach (IIsWebSite site in iisWebSiteList)
+        {           
+            if (blockedIPs.rootSite == null)
             {
-                if (site.SiteName.Equals("IIS Root"))
-                {
-                    rootSite = site;
-                    break;
-                }
-            }
-            if (rootSite == null)
-            {
-                MyLogger.Log(EventLogEntryType.Warning, "Cannot locate the IIS Root site, IP blocking will be disabled.");
-                DisableBlockButtons();
                 blockList.Enabled = false;
+                DisableBlockButtons();
             }
         }
 
@@ -90,6 +81,7 @@ namespace HomeServerConsoleTab.WebLogs
         private void LoadLogsWorker(object sender, DoWorkEventArgs e)
         {
             MyLogger.DebugLog("worker started");
+            
             logEntries = GetEntriesAsDataSet();
             if (logBinding == null)
             {
@@ -99,17 +91,18 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 logBinding.DataSource = logEntries;
             }
-
+            
             DisplayLogs(logBinding);
-
+            
             //hide or show based on the defaults
             HideOrShowRows();
+           
             MyLogger.DebugLog("worker done");
         }
 
         private void LoadLogsWorker_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
-            MyLogger.DebugLog("worker completed started");
+            dataGridView1.ResumeLayout();
             toolStripProgressBar1.Visible = false;
             toolStripProgressBar1.Enabled = false;
             consoleToolBarButton1.Enabled = true;
@@ -119,7 +112,6 @@ namespace HomeServerConsoleTab.WebLogs
             dataGridView1.ScrollBars = ScrollBars.Vertical;
             this.UseWaitCursor = false;
             this.Cursor = Cursors.Default;
-            MyLogger.DebugLog("worker completed done");
         }
 
         private DateTime ParseIISDateTime(string date, string time)
@@ -203,6 +195,7 @@ namespace HomeServerConsoleTab.WebLogs
             textBox1.Enabled = false;
             toolStripProgressBar1.Visible = true;
             dataGridView1.ScrollBars = ScrollBars.None;
+            dataGridView1.SuspendLayout();
 
             //go do stuff
             backgroundWorker.RunWorkerAsync();
@@ -321,18 +314,6 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        private void BlockIPOnAllSites(string ip)
-        {
-            if (rootSite == null)
-            {
-                MessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", "Web Logs", MessageBoxButtons.OK);
-                return;
-            }
-            else {
-                rootSite.BlockIpAddress(new IPAddressV4(ip));
-            }            
-        }
-
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (dataGridView1.Columns[e.ColumnIndex].Name == "IPWhoIs")
@@ -349,8 +330,25 @@ namespace HomeServerConsoleTab.WebLogs
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "Block")
             {
+                //safety check!!
+                if (dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString().StartsWith(LOCAL_SUBNET))
+                {
+                    MessageBox.Show("Sorry, I will not let you block a local IP address." +
+                        "If you accidentally block the IP for this client, you will be unable "
+                        + "to connect to the WHS console!", "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 MyLogger.Log(EventLogEntryType.Information,"blocking IP address: " + dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
-                BlockIPOnAllSites(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                blockedIPs.BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Unblock";
+            }
+            else if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
+            {
+                MyLogger.Log(EventLogEntryType.Information, "unblocking IP address: " + dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                blockedIPs.UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block";
             }
         }
 
@@ -370,8 +368,18 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void blockList_Click(object sender, EventArgs e)
         {
-            BlockedSites bs = new BlockedSites(rootSite);
-            bs.Show();
+            MyLogger.Log(EventLogEntryType.Warning, "loading it");
+            try
+            {
+                BlockedSitesForm bs = new BlockedSitesForm(); 
+                bs.Show();
+            }
+            catch (Exception ex)
+            {
+                MyLogger.Log(EventLogEntryType.Error, ex);
+            }
+            MyLogger.Log(EventLogEntryType.Warning, "done loading it");
+            
         }
     }
 }

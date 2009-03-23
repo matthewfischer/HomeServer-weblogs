@@ -9,10 +9,10 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) Disable block button on blocked IPs
-//2) Display that the IP is blocked somehow
-//3) Figure out random crashes
-//4) Figure out how to share the blocked IP list
+//1) Figure out random crashes - DEBUGGER
+//2) Button name change from block to unblock.
+//3) TEST - removing duplicates from the blocked list.
+//4) Figure out why you can't load the block list. - DEBUGGER
 
 namespace HomeServerConsoleTab.WebLogs
 {

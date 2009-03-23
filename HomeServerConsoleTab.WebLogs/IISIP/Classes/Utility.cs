@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace IISIP
 {
-    internal class Utility
+    public class Utility
     {
         //
         // Check for duplicates within a single list, and return

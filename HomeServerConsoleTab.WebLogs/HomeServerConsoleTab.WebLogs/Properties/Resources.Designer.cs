@@ -73,5 +73,12 @@ namespace HomeServerConsoleTab.WebLogs.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Icon logs21 {
+            get {
+                object obj = ResourceManager.GetObject("logs21", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
