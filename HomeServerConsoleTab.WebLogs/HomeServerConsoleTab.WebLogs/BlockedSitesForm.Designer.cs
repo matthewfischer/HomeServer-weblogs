@@ -39,7 +39,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.dataGridViewButtonColumn1 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.removeDupesButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -109,7 +108,7 @@
             this.Unblock.HeaderText = "Unblock";
             this.Unblock.Name = "Unblock";
             this.Unblock.ReadOnly = true;
-            this.Unblock.Text = "Unlbock";
+            this.Unblock.Text = "Unblock";
             this.Unblock.ToolTipText = "Unblock the target IP address";
             this.Unblock.UseColumnTextForButtonValue = true;
             // 
@@ -139,22 +138,11 @@
             this.dataGridViewButtonColumn1.UseColumnTextForButtonValue = true;
             this.dataGridViewButtonColumn1.Width = 80;
             // 
-            // removeDupesButton
-            // 
-            this.removeDupesButton.Location = new System.Drawing.Point(122, 4);
-            this.removeDupesButton.Name = "removeDupesButton";
-            this.removeDupesButton.Size = new System.Drawing.Size(108, 23);
-            this.removeDupesButton.TabIndex = 4;
-            this.removeDupesButton.Text = "Remove Duplicates";
-            this.removeDupesButton.UseVisualStyleBackColor = true;
-            this.removeDupesButton.Click += new System.EventHandler(this.removeDupesButton_Click);
-            // 
             // BlockedSitesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(231, 471);
-            this.Controls.Add(this.removeDupesButton);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.unblockAllButton);
@@ -167,6 +155,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Blocked Sites";
+            this.Load += new System.EventHandler(this.BlockedSitesForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -184,6 +173,5 @@
         private System.Windows.Forms.DataGridViewButtonColumn dataGridViewButtonColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn IP;
         private System.Windows.Forms.DataGridViewButtonColumn Unblock;
-        private System.Windows.Forms.Button removeDupesButton;
     }
 }

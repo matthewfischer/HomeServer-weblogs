@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.HomeServer.Extensibility;
+using Microsoft.HomeServer.Controls;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
@@ -9,10 +10,9 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) Figure out random crashes - DEBUGGER
+//1) Figure out random crashes
 //2) Button name change from block to unblock.
-//3) TEST - removing duplicates from the blocked list.
-//4) Figure out why you can't load the block list. - DEBUGGER
+//3) WishList: Change the safety mechanism for blocking
 
 namespace HomeServerConsoleTab.WebLogs
 {
@@ -47,8 +47,7 @@ namespace HomeServerConsoleTab.WebLogs
             msgBoxTxt = "WebLogs Add-In for Windows Home Server\n\nVersion: " + version + 
                 "\nFor more help, please go to http://mattfischer.com/whs/help.html\n\n" + ipBlockCredits;
 
-            MessageBox.Show(msgBoxTxt, "WebLogs", MessageBoxButtons.OK);
-
+            QMessageBox.Show(msgBoxTxt, "WebLogs", MessageBoxButtons.OK, MessageBoxIcon.Question);
             return true;
         }
 

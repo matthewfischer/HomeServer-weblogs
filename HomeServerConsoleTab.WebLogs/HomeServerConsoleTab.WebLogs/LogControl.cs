@@ -20,8 +20,8 @@ namespace HomeServerConsoleTab.WebLogs
     {
         private BindingSource logBinding;
         private LogParser parser = new LogParser();
-        private const String LOCALHOST = "127.0.0.1";
-        private const String LOCAL_SUBNET = "192.168.";
+        public static String LOCALHOST = "127.0.0.1";
+        public static String LOCAL_SUBNET = "192.168.";
         private const String EMPTY_USER = "-";
         private const String MEDIA_COLLECTOR_CONF = "/med_agg_cfg.xml";
         private const String whoisServerUrl = "http://ws.arin.net/whois/?queryinput={0}";
@@ -34,8 +34,6 @@ namespace HomeServerConsoleTab.WebLogs
         private IConsoleServices m_CS;
         private DataSet logEntries;
         private int showCount = 0;
-
-        private BlockedIPs blockedIPs = BlockedIPs.Instance;
 
         public LogControl(IConsoleServices cs)
         {
@@ -64,7 +62,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void SetupIPBlocking()
         {           
-            if (blockedIPs.rootSite == null)
+            if (BlockedIPs.GetInstance().rootSite == null)
             {
                 blockList.Enabled = false;
                 DisableBlockButtons();
@@ -81,21 +79,31 @@ namespace HomeServerConsoleTab.WebLogs
         private void LoadLogsWorker(object sender, DoWorkEventArgs e)
         {
             MyLogger.DebugLog("worker started");
-            
-            logEntries = GetEntriesAsDataSet();
-            if (logBinding == null)
+
+            try
             {
-                logBinding = new BindingSource(logEntries, "Logs");
+                logEntries = GetEntriesAsDataSet();
+
+                if (logBinding == null)
+                {
+                    logBinding = new BindingSource(logEntries, "Logs");
+                }
+                else
+                {
+                    logBinding.DataSource = logEntries;
+                }
+
+                DisplayLogs(logBinding);
+
+                //hide or show based on the defaults
+                HideOrShowRows();
             }
-            else
+
+            catch (Exception ex)
             {
-                logBinding.DataSource = logEntries;
+                MyLogger.Log(EventLogEntryType.Error, ex);
+                return;
             }
-            
-            DisplayLogs(logBinding);
-            
-            //hide or show based on the defaults
-            HideOrShowRows();
            
             MyLogger.DebugLog("worker done");
         }
@@ -314,6 +322,8 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
+        
+
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (dataGridView1.Columns[e.ColumnIndex].Name == "IPWhoIs")
@@ -333,20 +343,18 @@ namespace HomeServerConsoleTab.WebLogs
                 //safety check!!
                 if (dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString().StartsWith(LOCAL_SUBNET))
                 {
-                    MessageBox.Show("Sorry, I will not let you block a local IP address." +
-                        "If you accidentally block the IP for this client, you will be unable "
-                        + "to connect to the WHS console!", "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                     return;
                 }
-                MyLogger.Log(EventLogEntryType.Information,"blocking IP address: " + dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
-                blockedIPs.BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+
+
+                BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
                 (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
                 (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Unblock";
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
-            {
-                MyLogger.Log(EventLogEntryType.Information, "unblocking IP address: " + dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
-                blockedIPs.UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+            {               
+                BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
                 (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
                 (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block";
             }
@@ -368,18 +376,8 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void blockList_Click(object sender, EventArgs e)
         {
-            MyLogger.Log(EventLogEntryType.Warning, "loading it");
-            try
-            {
-                BlockedSitesForm bs = new BlockedSitesForm(); 
-                bs.Show();
-            }
-            catch (Exception ex)
-            {
-                MyLogger.Log(EventLogEntryType.Error, ex);
-            }
-            MyLogger.Log(EventLogEntryType.Warning, "done loading it");
-            
+            BlockedSitesForm bs = new BlockedSitesForm(); 
+            bs.Show();          
         }
     }
 }

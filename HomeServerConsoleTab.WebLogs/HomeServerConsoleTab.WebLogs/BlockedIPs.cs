@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Microsoft.HomeServer.Controls;
+using System.Net;
 using IISIP;
 
 namespace HomeServerConsoleTab.WebLogs
 {
     public sealed class BlockedIPs
     {
-        static readonly BlockedIPs instance=new BlockedIPs();
+        private static BlockedIPs instance;
 
         private List<IPAddressV4> ipBlocks;
         private IIsWebSite site;
@@ -27,15 +29,15 @@ namespace HomeServerConsoleTab.WebLogs
         {
             get
             {
-                return blockedSites;
+                if (site == null) 
+                {
+                    return null;
+                }
+                else 
+                {
+                    return site.GetBlockedIpAddresses();
+                }
             }
-        }
-
-        // Explicit static constructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static BlockedIPs()
-        {
-
         }
 
         BlockedIPs()
@@ -52,9 +54,34 @@ namespace HomeServerConsoleTab.WebLogs
             }
             if (this.rootSite == null)
             {
-                MyLogger.Log(EventLogEntryType.Warning, "Cannot locate the IIS Root site, IP blocking will be disabled.");              
+                MyLogger.Log(EventLogEntryType.Warning, "Cannot locate the IIS Root site, IP blocking will be disabled.");
+                return;
             }
-            this.ipBlocks = this.rootSite.GetBlockedIpAddresses();
+            else
+            {
+                this.ipBlocks = this.rootSite.GetBlockedIpAddresses();
+            }
+        }
+
+        private bool SafetyCheck(IPAddressV4 ip)
+        {
+            bool check1 = (!ip.Address.ToString().StartsWith(LogControl.LOCAL_SUBNET));
+            bool check2 = (ip.Address.ToString().Equals(LogControl.LOCALHOST));
+            if (check1 == false) 
+            {
+                QMessageBox.Show("Sorry, I will not let you block an IP address on the same subnet as your server." +
+                    "If you accidentally block the IP for this client, you will be unable "
+                    + "to connect to the WHS console!", "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return check1;
+            }
+            else if (check2 == false) 
+            {
+                QMessageBox.Show("Sorry, I will not let you block the localhost IP address (" 
+                    + LogControl.LOCALHOST + ")" + "If you accidentally block the IP for this client, you will be unable "
+                    + "to connect to the WHS console!", "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return check2;
+            }
+            return true;
         }
 
         public void BlockIP(string ip)
@@ -66,12 +93,16 @@ namespace HomeServerConsoleTab.WebLogs
         {
             if (rootSite == null)
             {
-                MessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", "Web Logs", MessageBoxButtons.OK);
-                return;
+                QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", 
+                    "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                rootSite.BlockIpAddress(ip);
+                if (SafetyCheck(ip))
+                {
+                    MyLogger.Log(EventLogEntryType.Information, "Blocking IP Address: " + ip.Address.ToString());
+                    rootSite.BlockIpAddress(ip);
+                }
             }
         }
 
@@ -84,21 +115,39 @@ namespace HomeServerConsoleTab.WebLogs
         {
             if (rootSite == null)
             {
-                MessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", "Web Logs", MessageBoxButtons.OK);
+                QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details",
+                   "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             else
             {
+                MyLogger.Log(EventLogEntryType.Information, "Unblocking IP Address: " + ip.Address.ToString());
                 rootSite.UnBlockIpAddress(ip);
             }
         }
 
-        public static BlockedIPs Instance
+        public void UnblockAllIPs()
         {
-            get
+            if (rootSite == null)
             {
-                return instance;
+                QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details",
+                    "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+            else
+            {
+                MyLogger.Log(EventLogEntryType.Information, "Unblocking ALL IP Address");
+                rootSite.UnBlockAllIpAddresses();
+            }
+        }
+
+        public static BlockedIPs GetInstance()
+        {
+            if (instance == null) 
+            {
+                instance = new BlockedIPs();
+            }
+            return instance;
         }
 
         public int RemoveDupes()

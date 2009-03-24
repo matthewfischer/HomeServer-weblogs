@@ -2,43 +2,45 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.HomeServer.Controls;
 using IISIP;
 
 namespace HomeServerConsoleTab.WebLogs
 {
     public partial class BlockedSitesForm : Form
-    {
-        
+    {       
         private DataSet ipDataSet;
         private BindingSource ipBinding;
         
-        private BlockedIPs blockedIPs = BlockedIPs.Instance;
-
         public BlockedSitesForm()
         {
-            InitializeComponent();
-            if (blockedIPs == null)
-            {
-                MyLogger.Log(System.Diagnostics.EventLogEntryType.Warning, "crap, it's null!");
-            }
-            InitializeData();
+            InitializeComponent();            
         }
 
         private void InitializeData()
         {
-            if (blockedIPs.blockedSites.Count == 0)
+            if (BlockedIPs.GetInstance().blockedSites.Count == 0)
             {
                 toolStripStatusLabel1.Text = "No sites currently blocked.";
+
+                if (ipDataSet != null)
+                {
+                    ipDataSet.Clear();
+                }
+                this.dataGridView1.Refresh();
+
                 this.unblockAllButton.Enabled = false;
-                this.removeDupesButton.Enabled = false;
+                //this.removeDupesButton.Enabled = false;
             }
             else
             {
-                ipDataSet = BuildDataTable(blockedIPs.blockedSites);
+                this.dataGridView1.SuspendLayout();
+                ipDataSet = BuildDataTable(BlockedIPs.GetInstance().blockedSites);
                 if (ipBinding == null)
                 {
                     ipBinding = new BindingSource(ipDataSet, "IP");
@@ -48,8 +50,12 @@ namespace HomeServerConsoleTab.WebLogs
                     ipBinding.DataSource = ipDataSet;
                 }
                 DisplayBlocks(ipBinding);
-                toolStripStatusLabel1.Text = "Currently blocking " + blockedIPs.blockedSites.Count + " sites.";
-            }    
+                this.dataGridView1.ResumeLayout();
+                
+                toolStripStatusLabel1.Text = "Currently blocking " + BlockedIPs.GetInstance().blockedSites.Count + " sites.";
+            }
+
+
         }
 
         private DataSet BuildDataTable(List<IPAddressV4> blocks)
@@ -88,23 +94,29 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void unblockAllButton_Click(object sender, EventArgs e)
         {
-            blockedIPs.rootSite.UnBlockAllIpAddresses();
+            BlockedIPs.GetInstance().UnblockAllIPs();
             InitializeData();
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
+        {          
             if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
             {
-                blockedIPs.rootSite.UnBlockIpAddress(new IPAddressV4(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()));
+                BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
                 InitializeData();
             }
         }
 
         private void removeDupesButton_Click(object sender, EventArgs e)
         {
-            int dupes = blockedIPs.RemoveDupes();
-            MessageBox.Show("Removed " + dupes + " duplicate entries.", "Web Logs", MessageBoxButtons.OK);
+            int dupes = BlockedIPs.GetInstance().RemoveDupes();
+            QMessageBox.Show("Removed " + dupes + " duplicate entries.", 
+                "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            InitializeData();
+        }
+
+        private void BlockedSitesForm_Load(object sender, EventArgs e)
+        {
             InitializeData();
         }
     }

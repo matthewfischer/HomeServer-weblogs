@@ -12,7 +12,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         public static void Log(EventLogEntryType logType, Exception e)
         {
-            Log(logType, e.Message);
+            Log(logType, e.Message + "\n" + e.StackTrace);
         }
 
         public static void Log(EventLogEntryType logType, string message) 
