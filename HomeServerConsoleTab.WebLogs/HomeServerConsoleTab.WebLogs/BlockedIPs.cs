@@ -16,8 +16,9 @@ namespace HomeServerConsoleTab.WebLogs
 
         private List<IPAddressV4> ipBlocks;
         private IIsWebSite site;
+        private Dictionary<string, IPAddressV4> ipHash;
 
-        public IIsWebSite rootSite
+        public IIsWebSite RootSite
         {
             get
             {
@@ -25,7 +26,22 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        public List<IPAddressV4> blockedSites
+        public Dictionary<string, IPAddressV4> BlockedHash
+        {
+            get
+            {
+                if (site == null) 
+                {
+                    return null;
+                }
+                else 
+                {
+                    return site.GetBlockedIpAddressDictionary();
+                }
+            }
+        }
+
+        public List<IPAddressV4> BlockedSites
         {
             get
             {
@@ -52,14 +68,15 @@ namespace HomeServerConsoleTab.WebLogs
                     break;
                 }
             }
-            if (this.rootSite == null)
+            if (this.RootSite == null)
             {
                 MyLogger.Log(EventLogEntryType.Warning, "Cannot locate the IIS Root site, IP blocking will be disabled.");
                 return;
             }
             else
             {
-                this.ipBlocks = this.rootSite.GetBlockedIpAddresses();
+                this.ipBlocks = this.RootSite.GetBlockedIpAddresses();
+                this.ipHash = this.RootSite.GetBlockedIpAddressDictionary();
             }
         }
 
@@ -93,7 +110,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         public bool BlockIP(IPAddressV4 ip)
         {
-            if (rootSite == null)
+            if (RootSite == null)
             {
                 QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", 
                     "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -104,7 +121,7 @@ namespace HomeServerConsoleTab.WebLogs
                 if (SafetyCheck(ip))
                 {
                     MyLogger.Log(EventLogEntryType.Information, "Blocking IP Address: " + ip.Address.ToString());
-                    rootSite.BlockIpAddress(ip);
+                    RootSite.BlockIpAddress(ip);
                     return true;
                 }
                 return false;
@@ -118,7 +135,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         public bool UnblockIP(IPAddressV4 ip)
         {
-            if (rootSite == null)
+            if (RootSite == null)
             {
                 QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details",
                    "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -127,14 +144,14 @@ namespace HomeServerConsoleTab.WebLogs
             else
             {
                 MyLogger.Log(EventLogEntryType.Information, "Unblocking IP Address: " + ip.Address.ToString());
-                rootSite.UnBlockIpAddress(ip);
+                RootSite.UnBlockIpAddress(ip);
                 return true;
             }
         }
 
         public void UnblockAllIPs()
         {
-            if (rootSite == null)
+            if (RootSite == null)
             {
                 QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details",
                     "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -143,7 +160,7 @@ namespace HomeServerConsoleTab.WebLogs
             else
             {
                 MyLogger.Log(EventLogEntryType.Information, "Unblocking ALL IP Address");
-                rootSite.UnBlockAllIpAddresses();
+                RootSite.UnBlockAllIpAddresses();
             }
         }
 
@@ -158,31 +175,26 @@ namespace HomeServerConsoleTab.WebLogs
             return instance;
         }
 
+        public bool IsThisIPBlocked(IPAddressV4 ip)
+        {
+            return IsThisIPBlocked(ip.Address);
+        }
+
+        public bool IsThisIPBlocked(string ip)
+        {
+            return ipHash.ContainsKey(ip);
+        }
+
         public int RemoveDupes()
         {
             int dupes = 0;
-            List<IPAddressV4> newList = Utility.RemoveDuplicateIPs(blockedSites, out dupes);
+            List<IPAddressV4> newList = Utility.RemoveDuplicateIPs(BlockedSites, out dupes);
             if (newList != null)
             {
                 site.UnBlockAllIpAddresses();
                 site.BlockIpAddressList(newList);
             }
             return dupes;
-        }
-
-        private IComparer<IPAddressV4> SortByIP()
-        {
-            return (IComparer<IPAddressV4>)new SortableIPList();
-        }
-
-        internal class SortableIPList : IComparer<IPAddressV4>
-        {
-            //this is not a full comparer...
-            public int Compare(IPAddressV4 x, IPAddressV4 y)
-            {
-                if (x == y) { return 0; }
-                else { return 1; }
-            }
         }
     }
 }

@@ -62,7 +62,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void SetupIPBlocking()
         {           
-            if (BlockedIPs.GetInstance().rootSite == null)
+            if (BlockedIPs.GetInstance().RootSite == null)
             {
                 blockList.Enabled = false;
                 DisableBlockButtons();
@@ -220,6 +220,26 @@ namespace HomeServerConsoleTab.WebLogs
 
         #region RowHideShow
 
+        //called after the block list form closes to refresh the form
+        private void ChangeButtonNames() 
+        {
+            foreach (DataGridViewRow r in dataGridView1.Rows)
+            {
+                string ip = r.Cells["IP"].Value.ToString();
+
+                //set the button name.
+                if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
+                {
+                    (r.Cells["Block"] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
+                }
+                else
+                {
+                    (r.Cells["Block"] as DataGridViewButtonCell).UseColumnTextForButtonValue = true;
+                }
+            }
+        }
+
         /// <summary>
         /// walks the data and hides or shows rows based on the state of the check-boxes.
         /// </summary>
@@ -236,6 +256,14 @@ namespace HomeServerConsoleTab.WebLogs
             foreach (DataGridViewRow r in dataGridView1.Rows)
             {               
                 string ip = r.Cells["IP"].Value.ToString();
+
+                //set the button name.
+                if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
+                {
+                    (r.Cells["Block"] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
+                }
+
                 string user = r.Cells["User"].Value.ToString();
                 string uristem = r.Cells["URIStem"].Value.ToString();
   
@@ -335,9 +363,7 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 if (BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-                    //XXX - maybe don't need 2nd line?
-                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
-                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block";
+                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = true;
                 }
             }
         }
@@ -358,8 +384,9 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void blockList_Click(object sender, EventArgs e)
         {
-            BlockedSitesForm bs = new BlockedSitesForm(); 
-            bs.Show();
+            BlockedSitesForm bs = new BlockedSitesForm();
+            bs.ShowDialog();
+            ChangeButtonNames();
         }
 
         #endregion
@@ -375,11 +402,6 @@ namespace HomeServerConsoleTab.WebLogs
                 MyLogger.Log(EventLogEntryType.Error, "WebLogs is unable to open the URL.  Full error:\n" + e.Message);
                 QMessageBox.Show("WebLogs is unable to open the URL for some reason.  If the issue continues, please contact the developer.", "Error");
             }
-        }
-
-        private void dataGridView1_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
-        {
-            //http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/1f8a6a22-183d-4554-951e-fbdf45472ea5
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

@@ -19,12 +19,12 @@ namespace HomeServerConsoleTab.WebLogs
         
         public BlockedSitesForm()
         {
-            InitializeComponent();            
+            InitializeComponent();          
         }
 
         private void InitializeData()
         {
-            if (BlockedIPs.GetInstance().blockedSites.Count == 0)
+            if (BlockedIPs.GetInstance().BlockedSites.Count == 0)
             {
                 toolStripStatusLabel1.Text = "No sites currently blocked.";
 
@@ -40,7 +40,7 @@ namespace HomeServerConsoleTab.WebLogs
             else
             {
                 this.dataGridView1.SuspendLayout();
-                ipDataSet = BuildDataTable(BlockedIPs.GetInstance().blockedSites);
+                ipDataSet = BuildDataTable(BlockedIPs.GetInstance().BlockedSites);
                 if (ipBinding == null)
                 {
                     ipBinding = new BindingSource(ipDataSet, "IP");
@@ -52,7 +52,7 @@ namespace HomeServerConsoleTab.WebLogs
                 DisplayBlocks(ipBinding);
                 this.dataGridView1.ResumeLayout();
                 
-                toolStripStatusLabel1.Text = "Currently blocking " + BlockedIPs.GetInstance().blockedSites.Count + " sites.";
+                toolStripStatusLabel1.Text = "Currently blocking " + BlockedIPs.GetInstance().BlockedSites.Count + " sites.";
             }
 
 
