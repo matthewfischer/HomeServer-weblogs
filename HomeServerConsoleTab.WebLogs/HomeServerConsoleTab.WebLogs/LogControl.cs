@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Data;
 using System.Text;
-using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.HomeServer.Extensibility;
 using Microsoft.HomeServer.Controls;
@@ -18,7 +17,7 @@ namespace HomeServerConsoleTab.WebLogs
 {
     public partial class LogControl : UserControl
     {
-        private BindingSource logBinding;
+        private BindingSource logBinding = new BindingSource();
         private LogParser parser = new LogParser();
         public static String LOCALHOST = "127.0.0.1";
         public static String LOCAL_SUBNET = "192.168.";
@@ -29,33 +28,34 @@ namespace HomeServerConsoleTab.WebLogs
         private const String dnsUrl = "http://network-tools.com/default.asp?prog=dnsrec&host={0}";
         private const String countText = "Showing {0} logs out of {1} total entries.";
         private const String updatingString = "Updating display, please wait...";
-        private const int defaultMaxEntries = 2000;
+        private const int defaultMaxEntries = 500;
+        private int MaxEntries = defaultMaxEntries;
         
         private IConsoleServices m_CS;
-        private DataSet logEntries;
+        private DataSet logEntries = null;
         private int showCount = 0;
 
         public LogControl(IConsoleServices cs)
         {
             m_CS = cs;
-            SetupDebugLogging();
+            ReadRegistryEntries();
             InitializeComponent();
             SetupIPBlocking();
         }
 
-        private void SetupDebugLogging()
+        private void ReadRegistryEntries()
         {          
             try
             {
                 RegistryKey rk = Registry.LocalMachine;
-                rk = rk.OpenSubKey(@"SOFTWARE\weblogs", false);
-                if (rk != null)
-                {
-                    MyLogger.DebugLevel = (int)rk.GetValue("debug_level");
-                }
+                rk = rk.OpenSubKey(@"SOFTWARE\WebLogsAddIn", false);
+                MyLogger.DebugLevel = (int)rk.GetValue("debug_level");
+                MaxEntries = (int)rk.GetValue("DefaultLoadedLogs", MaxEntries);
             }
             catch (Exception e)
             {
+                MyLogger.DebugLevel = 0;
+                MaxEntries = defaultMaxEntries;
                 MyLogger.Log(EventLogEntryType.Warning, "Error reading the debug logging level\n\n" + e.Message);
             }
         }
@@ -71,7 +71,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void DisableBlockButtons()
         {
-            //(dataGridView1.Columns["Block"] as DataGridViewDisableButtonColumn).Enabled = false;
+            //dataGridView1.Columns["Block"].S
         }
 
         #region DataHandlerAndLoader
@@ -79,21 +79,14 @@ namespace HomeServerConsoleTab.WebLogs
         private void LoadLogsWorker(object sender, DoWorkEventArgs e)
         {
             MyLogger.DebugLog("worker started");
-
             try
-            {
+            {              
+                logBinding.SuspendBinding();
                 logEntries = GetEntriesAsDataSet();
-
-                if (logBinding == null)
-                {
-                    logBinding = new BindingSource(logEntries, "Logs");
-                }
-                else
-                {
-                    logBinding.DataSource = logEntries;
-                }
-
-                DisplayLogs(logBinding);
+                logBinding.DataSource = logEntries;
+                logBinding.DataMember = "Logs";
+                logBinding.ResumeBinding();
+                dataGridView1.DataSource = logBinding;               
 
                 //hide or show based on the defaults
                 HideOrShowRows();
@@ -101,44 +94,28 @@ namespace HomeServerConsoleTab.WebLogs
 
             catch (Exception ex)
             {
+                QMessageBox.Show("Error while loading the logs, please report this to the author: matt@mattfischer.com.  Thanks!",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 MyLogger.Log(EventLogEntryType.Error, ex);
                 return;
             }
-           
             MyLogger.DebugLog("worker done");
         }
 
         private void LoadLogsWorker_Completed(object sender, RunWorkerCompletedEventArgs e)
-        {
+        {        
+            dataGridView1.ScrollBars = ScrollBars.Vertical;
             dataGridView1.ResumeLayout();
+            dataGridView1.Refresh();
             toolStripProgressBar1.Visible = false;
             toolStripProgressBar1.Enabled = false;
             consoleToolBarButton1.Enabled = true;
             textBox1.Enabled = true;
-            UpdateLogCount();
-            dataGridView1.ResumeLayout();
-            dataGridView1.ScrollBars = ScrollBars.Vertical;
+                        
             this.UseWaitCursor = false;
             this.Cursor = Cursors.Default;
-        }
 
-        private DateTime ParseIISDateTime(string date, string time)
-        {
-            //date: 2009-03-08  time: 00:17:07            
-            string expectedFormat = "yyyy-MM-dd HH:mm:ss";
-            IFormatProvider culture = CultureInfo.CurrentCulture;
-
-            try
-            {
-                DateTime dt = DateTime.ParseExact(date + " " + time, expectedFormat, culture);
-                return dt.ToLocalTime();
-            }
-            catch (Exception e)
-            {
-                MyLogger.Log(EventLogEntryType.Warning, "Error parsing IIS date/time to DateTime object.  Date: " + date + "\n"
-                    + "Time: " + time + "\n" + e.Message);
-                return DateTime.MinValue;
-            }
+            UpdateLogCount();
         }
 
         private void UpdateLogCount()
@@ -150,7 +127,7 @@ namespace HomeServerConsoleTab.WebLogs
         {
             DataRow row = table.NewRow();
             row["IP"] = entry[(int)IISLog.c_ip];
-            row["Date"] = ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
+            row["Date"] = parser.ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
             row["User"] = entry[(int)IISLog.cs_username];
             row["URIStem"] = entry[(int)IISLog.cs_uri_stem];
             table.Rows.Add(row);
@@ -173,7 +150,7 @@ namespace HomeServerConsoleTab.WebLogs
             MyLogger.DebugLog("getting entries in a loop");
 
             logDataTable.BeginLoadData();
-            foreach (string[] s in parser.parseAllLogs(Int32.Parse(textBox1.Text)))
+            foreach (string[] s in parser.ParseAllLogs(MaxEntries))
             {
                 AddTableRow(logDataTable, s);
             }
@@ -203,17 +180,34 @@ namespace HomeServerConsoleTab.WebLogs
             textBox1.Enabled = false;
             toolStripProgressBar1.Visible = true;
             dataGridView1.ScrollBars = ScrollBars.None;
-            dataGridView1.SuspendLayout();
 
             //go do stuff
             backgroundWorker.RunWorkerAsync();
         }
 
-        public void DisplayLogs(BindingSource b)
-        {
-            this.dataGridView1.DataSource = b;
-            this.dataGridView1.Refresh();
-        }
+        //unused!
+        //private void SaveSettingsToRegistry(int numberOfLogs)
+        //{
+        //    try
+        //    {
+        //        RegistryKey HKLMKey = Registry.LocalMachine;
+        //        RegistryKey SoftwareKey = HKLMKey.OpenSubKey("SOFTWARE");
+        //        RegistryKey WebLogsKey = HKLMKey.OpenSubKey("WebLogsAddIn");
+        //        if (WebLogsKey == null)
+        //        {
+        //            WebLogsKey = SoftwareKey.CreateSubKey("WebLogsAddIn");
+        //            WebLogsKey.SetValue("DefaultLoadedLogs", defaultMaxEntries);
+        //        }
+        //        else
+        //        {
+        //            MyLogger.DebugLog("No keys to set!");
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        MyLogger.Log(EventLogEntryType.Error, e);
+        //    }
+        //}
 
         private void LogControl_Load(object sender, EventArgs e)
         {
@@ -232,7 +226,6 @@ namespace HomeServerConsoleTab.WebLogs
         private void HideOrShowRows()
         {
             showCount = dataGridView1.RowCount;
-            MyLogger.DebugLog("RowCount: " + showCount);
             dataGridView1.SuspendLayout();
 
             CurrencyManager cm = (CurrencyManager)BindingContext[dataGridView1.DataSource];
@@ -241,12 +234,11 @@ namespace HomeServerConsoleTab.WebLogs
             dataGridView1.ClearSelection();  //we can't hide cells that are selected, so clear the selection.
 
             foreach (DataGridViewRow r in dataGridView1.Rows)
-            {
-                r.Visible = true;  //default to visible
+            {               
                 string ip = r.Cells["IP"].Value.ToString();
                 string user = r.Cells["User"].Value.ToString();
-                string uri_stem = r.Cells["URIStem"].Value.ToString();
-
+                string uristem = r.Cells["URIStem"].Value.ToString();
+  
                 if ((checkBox1.Checked) && (ip.Equals(LOCALHOST)))
                 {
                     showCount--;
@@ -254,28 +246,34 @@ namespace HomeServerConsoleTab.WebLogs
                     continue;
                 }
 
-                if ((checkBox2.Checked) && (ip.StartsWith(LOCAL_SUBNET)))
+                else if ((checkBox2.Checked) && (ip.StartsWith(LOCAL_SUBNET)))
                 {
                     showCount--;
                     r.Visible = false;
                     continue;
                 }
 
-                if ((checkBox3.Checked) && (user.Equals(EMPTY_USER)))
+                else if ((checkBox3.Checked) && (user.Equals(EMPTY_USER)))
                 {
                     showCount--;
                     r.Visible = false;
                     continue;
                 }
 
-                if ((checkBox4.Checked) && (uri_stem.Equals(MEDIA_COLLECTOR_CONF)))
+                else if ((checkBox4.Checked) && (uristem.Equals(MEDIA_COLLECTOR_CONF)))
                 {
                     showCount--;
                     r.Visible = false;
                     continue;
+                }
+                else
+                {
+                    r.Visible = true;  //default to visible
                 }
             }
+            
             cm.ResumeBinding();
+            dataGridView1.ResumeLayout();
             UpdateLogCount();
         }
 
@@ -307,22 +305,9 @@ namespace HomeServerConsoleTab.WebLogs
             HideOrShowRows();
         }
         
-        #endregion
+        #endregion       
 
-        private void OpenWebpage(string url)
-        {
-            try
-            {
-                m_CS.OpenUrl(url);
-            }
-            catch (Exception e)
-            {
-                MyLogger.Log(EventLogEntryType.Error, "WebLogs is unable to open the URL.  Full error:\n" + e.Message);
-                QMessageBox.Show("WebLogs is unable to open the URL for some reason.  If the issue continues, please contact the developer.", "Error");
-            }
-        }
-
-        
+        #region ClickHandlers
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -340,23 +325,20 @@ namespace HomeServerConsoleTab.WebLogs
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "Block")
             {
-                //safety check!!
-                if (dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString().StartsWith(LOCAL_SUBNET))
+                if (BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-
-                    return;
+                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Unblock";
                 }
-
-
-                BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
-                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
-                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Unblock";
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
-            {               
-                BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
-                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
-                (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block";
+            {
+                if (BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
+                {
+                    //XXX - maybe don't need 2nd line?
+                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block";
+                }
             }
         }
 
@@ -377,7 +359,44 @@ namespace HomeServerConsoleTab.WebLogs
         private void blockList_Click(object sender, EventArgs e)
         {
             BlockedSitesForm bs = new BlockedSitesForm(); 
-            bs.Show();          
+            bs.Show();
+        }
+
+        #endregion
+
+        private void OpenWebpage(string url)
+        {
+            try
+            {
+                m_CS.OpenUrl(url);
+            }
+            catch (Exception e)
+            {
+                MyLogger.Log(EventLogEntryType.Error, "WebLogs is unable to open the URL.  Full error:\n" + e.Message);
+                QMessageBox.Show("WebLogs is unable to open the URL for some reason.  If the issue continues, please contact the developer.", "Error");
+            }
+        }
+
+        private void dataGridView1_RowPostPaint(object sender, DataGridViewRowPostPaintEventArgs e)
+        {
+            //http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/1f8a6a22-183d-4554-951e-fbdf45472ea5
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                MaxEntries = Int32.Parse(textBox1.Text);
+                MyLogger.DebugLog("MaxEntries changed to: " + MaxEntries);
+                RegistryKey rootKey = Registry.LocalMachine;
+                RegistryKey swKey = rootKey.OpenSubKey(@"SOFTWARE\WebLogsAddIn", true);              
+                swKey.SetValue("DefaultLoadedLogs", MaxEntries);
+            }
+            catch (Exception ex)
+            {
+                MyLogger.Log(EventLogEntryType.Warning, ex);
+                MaxEntries = defaultMaxEntries;
+            }
         }
     }
 }

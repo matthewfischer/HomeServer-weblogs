@@ -66,10 +66,10 @@ namespace HomeServerConsoleTab.WebLogs
         private bool SafetyCheck(IPAddressV4 ip)
         {
             bool check1 = (!ip.Address.ToString().StartsWith(LogControl.LOCAL_SUBNET));
-            bool check2 = (ip.Address.ToString().Equals(LogControl.LOCALHOST));
+            bool check2 = (!ip.Address.ToString().Equals(LogControl.LOCALHOST));
             if (check1 == false) 
             {
-                QMessageBox.Show("Sorry, I will not let you block an IP address on the same subnet as your server." +
+                QMessageBox.Show("Sorry, I will not let you block an IP address on the same subnet as your server.  " +
                     "If you accidentally block the IP for this client, you will be unable "
                     + "to connect to the WHS console!", "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return check1;
@@ -77,24 +77,27 @@ namespace HomeServerConsoleTab.WebLogs
             else if (check2 == false) 
             {
                 QMessageBox.Show("Sorry, I will not let you block the localhost IP address (" 
-                    + LogControl.LOCALHOST + ")" + "If you accidentally block the IP for this client, you will be unable "
+                    + LogControl.LOCALHOST + ")." + "  If you accidentally block the IP for this client, you will be unable "
                     + "to connect to the WHS console!", "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return check2;
             }
             return true;
         }
 
-        public void BlockIP(string ip)
+        #region BlockingActions
+
+        public bool BlockIP(string ip)
         {
-            BlockIP(new IPAddressV4(ip));
+            return BlockIP(new IPAddressV4(ip));
         }
 
-        public void BlockIP(IPAddressV4 ip)
+        public bool BlockIP(IPAddressV4 ip)
         {
             if (rootSite == null)
             {
                 QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details", 
                     "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
             else
             {
@@ -102,27 +105,30 @@ namespace HomeServerConsoleTab.WebLogs
                 {
                     MyLogger.Log(EventLogEntryType.Information, "Blocking IP Address: " + ip.Address.ToString());
                     rootSite.BlockIpAddress(ip);
+                    return true;
                 }
+                return false;
             }
         }
 
-        public void UnblockIP(string ip)
+        public bool UnblockIP(string ip)
         {
-            UnblockIP(new IPAddressV4(ip));
+            return UnblockIP(new IPAddressV4(ip));
         }
 
-        public void UnblockIP(IPAddressV4 ip)
+        public bool UnblockIP(IPAddressV4 ip)
         {
             if (rootSite == null)
             {
                 QMessageBox.Show("IP Blocking is disabled due to an error, refer to the event logs for more details",
                    "Web Logs", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                return false;
             }
             else
             {
                 MyLogger.Log(EventLogEntryType.Information, "Unblocking IP Address: " + ip.Address.ToString());
                 rootSite.UnBlockIpAddress(ip);
+                return true;
             }
         }
 
@@ -140,6 +146,8 @@ namespace HomeServerConsoleTab.WebLogs
                 rootSite.UnBlockAllIpAddresses();
             }
         }
+
+        #endregion
 
         public static BlockedIPs GetInstance()
         {
@@ -160,6 +168,21 @@ namespace HomeServerConsoleTab.WebLogs
                 site.BlockIpAddressList(newList);
             }
             return dupes;
+        }
+
+        private IComparer<IPAddressV4> SortByIP()
+        {
+            return (IComparer<IPAddressV4>)new SortableIPList();
+        }
+
+        internal class SortableIPList : IComparer<IPAddressV4>
+        {
+            //this is not a full comparer...
+            public int Compare(IPAddressV4 x, IPAddressV4 y)
+            {
+                if (x == y) { return 0; }
+                else { return 1; }
+            }
         }
     }
 }

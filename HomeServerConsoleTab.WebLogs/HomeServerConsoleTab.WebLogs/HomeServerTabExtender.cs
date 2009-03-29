@@ -10,9 +10,14 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) Figure out random crashes
-//2) Button name change from block to unblock.
-//3) WishList: Change the safety mechanism for blocking
+//1) Button name change from block to unblock.
+//2) WishList: Change the safety mechanism for blocking to server subnet.
+
+//1.0.5.0
+//-------
+//1) IP blocking/unblocking
+//2) Default range down to 500, range default saved in registry.
+//3) Speed improvements
 
 namespace HomeServerConsoleTab.WebLogs
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace HomeServerConsoleTab.WebLogs
 {
@@ -20,7 +21,7 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        public List<string[]> parseAllLogs(int maxEntries)
+        public List<string[]> ParseAllLogs(int maxEntries)
         {
             max = maxEntries;
             MyLogger.DebugLog("File Looper: Loading max of " + max + " logs");
@@ -33,13 +34,14 @@ namespace HomeServerConsoleTab.WebLogs
                 if (tmp != null)
                 {
                     parsedLines.AddRange(tmp);
-                    MyLogger.DebugLog("max = " + max + " - pl " + parsedLines.Count);
+                    MyLogger.DebugLog("max = " + max + " - pl = " + parsedLines.Count);
                     if (max <= 0)
                     {
                         return parsedLines;
                     }
                 }
             }
+            MyLogger.DebugLog("No more logs, returning.");
             return parsedLines;
         }
 
@@ -54,9 +56,9 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 DirectoryInfo dir = new DirectoryInfo(logDir);
                 FileInfo [] flist = dir.GetFiles("*.log");
-                MyLogger.DebugLog("first entry = " + flist[0].LastWriteTime.ToString());
+                //MyLogger.DebugLog("first entry = " + flist[0].LastWriteTime.ToString());
                 Array.Sort(flist, sortByLastWriteTime());
-                MyLogger.DebugLog("SORTED first entry = " + flist[0].LastWriteTime.ToString());
+                //MyLogger.DebugLog("SORTED first entry = " + flist[0].LastWriteTime.ToString());
                 return flist;
             }
             catch (Exception e)
@@ -64,6 +66,25 @@ namespace HomeServerConsoleTab.WebLogs
                 MyLogger.Log(EventLogEntryType.Error, e);
                 return null;
             }            
+        }
+
+        public DateTime ParseIISDateTime(string date, string time)
+        {
+            //date: 2009-03-08  time: 00:17:07            
+            string expectedFormat = "yyyy-MM-dd HH:mm:ss";
+            IFormatProvider culture = CultureInfo.CurrentCulture;
+
+            try
+            {
+                DateTime dt = DateTime.ParseExact(date + " " + time, expectedFormat, culture);
+                return dt.ToLocalTime();
+            }
+            catch (Exception e)
+            {
+                MyLogger.Log(EventLogEntryType.Warning, "Error parsing IIS date/time to DateTime object.  Date: " + date + "\n"
+                    + "Time: " + time + "\n" + e.Message);
+                return DateTime.MinValue;
+            }
         }
 
         public List<string []> parseLog(FileInfo log)

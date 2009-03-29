@@ -43,6 +43,14 @@ namespace HomeServerConsoleTab.WebLogs
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogControl));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.IP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.User = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.IPWhoIs = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.geoIP = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.dns = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Block = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.URIStem = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -55,14 +63,6 @@ namespace HomeServerConsoleTab.WebLogs
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.blockList = new System.Windows.Forms.Button();
-            this.IP = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Date = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.User = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.IPWhoIs = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.geoIP = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.dns = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Block = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.URIStem = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.consoleToolBar1.SuspendLayout();
@@ -117,7 +117,84 @@ namespace HomeServerConsoleTab.WebLogs
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.None;
             this.dataGridView1.Size = new System.Drawing.Size(979, 480);
             this.dataGridView1.TabIndex = 1;
+            this.dataGridView1.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // IP
+            // 
+            this.IP.DataPropertyName = "IP";
+            this.IP.HeaderText = "IP";
+            this.IP.Name = "IP";
+            this.IP.ReadOnly = true;
+            this.IP.ToolTipText = "IP address of the requestor.";
+            this.IP.Width = 90;
+            // 
+            // Date
+            // 
+            this.Date.DataPropertyName = "Date";
+            this.Date.HeaderText = "Date / Time";
+            this.Date.Name = "Date";
+            this.Date.ReadOnly = true;
+            this.Date.ToolTipText = "Date of the request converted to local date";
+            this.Date.Width = 140;
+            // 
+            // User
+            // 
+            this.User.DataPropertyName = "User";
+            this.User.HeaderText = "User";
+            this.User.Name = "User";
+            this.User.ReadOnly = true;
+            this.User.ToolTipText = "The user name for this request.  Will be blank if this no user was logged in.";
+            this.User.Width = 140;
+            // 
+            // IPWhoIs
+            // 
+            this.IPWhoIs.HeaderText = "whois Lookup";
+            this.IPWhoIs.Name = "IPWhoIs";
+            this.IPWhoIs.ReadOnly = true;
+            this.IPWhoIs.Text = "whois";
+            this.IPWhoIs.ToolTipText = "Perform a whois lookup on this IP address.";
+            this.IPWhoIs.UseColumnTextForButtonValue = true;
+            this.IPWhoIs.Width = 80;
+            // 
+            // geoIP
+            // 
+            this.geoIP.HeaderText = "Geo Locate IP";
+            this.geoIP.Name = "geoIP";
+            this.geoIP.ReadOnly = true;
+            this.geoIP.Text = "GeoLocate IP";
+            this.geoIP.ToolTipText = "Geographically locate the requestor\'s IP";
+            this.geoIP.UseColumnTextForButtonValue = true;
+            this.geoIP.Width = 84;
+            // 
+            // dns
+            // 
+            this.dns.HeaderText = "DNS Lookup";
+            this.dns.Name = "dns";
+            this.dns.ReadOnly = true;
+            this.dns.Text = "DNS";
+            this.dns.ToolTipText = "Perform a DNS lookup on the requestor\'s IP";
+            this.dns.UseColumnTextForButtonValue = true;
+            this.dns.Width = 75;
+            // 
+            // Block
+            // 
+            this.Block.HeaderText = "Block IP";
+            this.Block.Name = "Block";
+            this.Block.ReadOnly = true;
+            this.Block.Text = "Block IP";
+            this.Block.ToolTipText = "Advanced: Block this IP address in IIS.";
+            this.Block.UseColumnTextForButtonValue = true;
+            this.Block.Width = 60;
+            // 
+            // URIStem
+            // 
+            this.URIStem.DataPropertyName = "URIStem";
+            this.URIStem.HeaderText = "URL";
+            this.URIStem.Name = "URIStem";
+            this.URIStem.ReadOnly = true;
+            this.URIStem.ToolTipText = "Requested URL";
+            this.URIStem.Width = 313;
             // 
             // checkBox1
             // 
@@ -229,6 +306,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(65, 20);
             this.textBox1.TabIndex = 10;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyUp);
             // 
             // label1
@@ -250,82 +328,6 @@ namespace HomeServerConsoleTab.WebLogs
             this.blockList.UseVisualStyleBackColor = true;
             this.blockList.Click += new System.EventHandler(this.blockList_Click);
             // 
-            // IP
-            // 
-            this.IP.DataPropertyName = "IP";
-            this.IP.HeaderText = "IP";
-            this.IP.Name = "IP";
-            this.IP.ReadOnly = true;
-            this.IP.ToolTipText = "IP address of the requestor.";
-            this.IP.Width = 90;
-            // 
-            // Date
-            // 
-            this.Date.DataPropertyName = "Date";
-            this.Date.HeaderText = "Date / Time";
-            this.Date.Name = "Date";
-            this.Date.ReadOnly = true;
-            this.Date.ToolTipText = "Date of the request converted to local date";
-            this.Date.Width = 140;
-            // 
-            // User
-            // 
-            this.User.DataPropertyName = "User";
-            this.User.HeaderText = "User";
-            this.User.Name = "User";
-            this.User.ReadOnly = true;
-            this.User.ToolTipText = "The user name for this request.  Will be blank if this no user was logged in.";
-            this.User.Width = 140;
-            // 
-            // IPWhoIs
-            // 
-            this.IPWhoIs.HeaderText = "whois Lookup";
-            this.IPWhoIs.Name = "IPWhoIs";
-            this.IPWhoIs.ReadOnly = true;
-            this.IPWhoIs.Text = "whois";
-            this.IPWhoIs.ToolTipText = "Perform a whois lookup on this IP address.";
-            this.IPWhoIs.UseColumnTextForButtonValue = true;
-            this.IPWhoIs.Width = 80;
-            // 
-            // geoIP
-            // 
-            this.geoIP.HeaderText = "Geo Locate IP";
-            this.geoIP.Name = "geoIP";
-            this.geoIP.ReadOnly = true;
-            this.geoIP.Text = "GeoLocate IP";
-            this.geoIP.ToolTipText = "Geographically locate the requestor\'s IP";
-            this.geoIP.UseColumnTextForButtonValue = true;
-            this.geoIP.Width = 84;
-            // 
-            // dns
-            // 
-            this.dns.HeaderText = "DNS Lookup";
-            this.dns.Name = "dns";
-            this.dns.ReadOnly = true;
-            this.dns.Text = "DNS";
-            this.dns.ToolTipText = "Perform a DNS lookup on the requestor\'s IP";
-            this.dns.UseColumnTextForButtonValue = true;
-            this.dns.Width = 75;
-            // 
-            // Block
-            // 
-            this.Block.HeaderText = "Block IP";
-            this.Block.Name = "Block";
-            this.Block.ReadOnly = true;
-            this.Block.Text = "Block IP";
-            this.Block.ToolTipText = "Advanced: Block this IP address in IIS.";
-            this.Block.UseColumnTextForButtonValue = true;
-            this.Block.Width = 60;
-            // 
-            // URIStem
-            // 
-            this.URIStem.DataPropertyName = "URIStem";
-            this.URIStem.HeaderText = "URL";
-            this.URIStem.Name = "URIStem";
-            this.URIStem.ReadOnly = true;
-            this.URIStem.ToolTipText = "Requested URL";
-            this.URIStem.Width = 313;
-            // 
             // LogControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -342,7 +344,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.Controls.Add(this.consoleToolBar1);
             this.Name = "LogControl";
             this.Size = new System.Drawing.Size(982, 562);
-            this.Load += new System.EventHandler(this.LogControl_Load);
+            this.Load += new System.EventHandler(this.LogControl_Load);           
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
