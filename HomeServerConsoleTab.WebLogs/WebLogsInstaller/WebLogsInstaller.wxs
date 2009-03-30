@@ -19,6 +19,8 @@
 
     <Property Id="WHSLogo">1</Property>
 
+    <!-- UIRef Id="WixUI_Minimal" /> -->
+
     <Condition Message="[ProductName] requires Windows Home Server. For more information, please refer to the User Guide.">VersionNT = 502</Condition>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -28,6 +30,7 @@
             <RegistryKey Root="HKLM" Key="Software\WebLogsAddIn" Action="createAndRemoveOnUninstall" />
             <RegistryValue Root="HKLM" Key="Software\WebLogsAddIn\DefaultLoadedLogs" Type="integer" Value="500" />
             <RegistryValue Root="HKLM" Key="Software\WebLogsAddIn\debug_level" Type="integer" Value="0" />
+            <RegistryValue Root="HKLM" Key="Software\WebLogsAddIn\LicenseAccepted" Type="integer" Value="0" />
             <File Id="HomeServerConsoleTab.WebLogs.dll" Name="HomeServerConsoleTab.WebLogs.dll" Source="..\HomeServerConsoleTab.WebLogs\bin\Release\HomeServerConsoleTab.WebLogs.dll" Vital="yes" KeyPath="yes" DiskId="1" />
             <File Id="IISIPCode" Name="IISIP.dll" Source="..\IISIP\bin\Release\IISIP.dll" Vital="yes" DiskId="1" />
           </Component>

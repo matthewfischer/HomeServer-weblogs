@@ -183,7 +183,6 @@ namespace HomeServerConsoleTab.WebLogs
             this.Block.ReadOnly = true;
             this.Block.Text = "Block IP";
             this.Block.ToolTipText = "Advanced: Block this IP address in IIS.";
-            this.Block.UseColumnTextForButtonValue = true;
             this.Block.Width = 60;
             // 
             // URIStem
@@ -343,7 +342,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.Controls.Add(this.consoleToolBar1);
             this.Name = "LogControl";
             this.Size = new System.Drawing.Size(982, 562);
-            this.Load += new System.EventHandler(this.LogControl_Load);           
+            this.Load += new System.EventHandler(this.LogControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

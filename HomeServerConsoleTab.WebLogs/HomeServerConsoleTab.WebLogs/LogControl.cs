@@ -30,6 +30,10 @@ namespace HomeServerConsoleTab.WebLogs
         private const String updatingString = "Updating display, please wait...";
         private const int defaultMaxEntries = 500;
         private int MaxEntries = defaultMaxEntries;
+
+        private const int LICENSE_REFUSED = 0;
+        private const int LICENSE_ACCEPTED = 33;
+        private int licenseAccepted = LICENSE_REFUSED;
         
         private IConsoleServices m_CS;
         private DataSet logEntries = null;
@@ -51,6 +55,7 @@ namespace HomeServerConsoleTab.WebLogs
                 rk = rk.OpenSubKey(@"SOFTWARE\WebLogsAddIn", false);
                 MyLogger.DebugLevel = (int)rk.GetValue("debug_level");
                 MaxEntries = (int)rk.GetValue("DefaultLoadedLogs", MaxEntries);
+                licenseAccepted = (int)rk.GetValue("LicenseAccepted", licenseAccepted);
             }
             catch (Exception e)
             {
@@ -147,8 +152,6 @@ namespace HomeServerConsoleTab.WebLogs
 
             logData.Tables.Add(logDataTable);
 
-            MyLogger.DebugLog("getting entries in a loop");
-
             logDataTable.BeginLoadData();
             foreach (string[] s in parser.ParseAllLogs(MaxEntries))
             {
@@ -211,9 +214,28 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void LogControl_Load(object sender, EventArgs e)
         {
-            textBox1.Text = defaultMaxEntries.ToString();
-            dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
-            LoadLogs();
+            if (licenseAccepted == LICENSE_REFUSED)
+            {
+                DialogResult dr = new DialogResult();
+                LicenseForm lf = new LicenseForm();
+                dr = lf.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    licenseAccepted = LICENSE_ACCEPTED;
+                }
+            }
+
+            //if it's still false, disable the form, if true, load the logs.
+            if (licenseAccepted == LICENSE_ACCEPTED)
+            {
+                textBox1.Text = defaultMaxEntries.ToString();
+                dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
+                LoadLogs();
+            }
+            else
+            {
+                DisableForm();
+            }
         }
         
         #endregion
@@ -223,21 +245,29 @@ namespace HomeServerConsoleTab.WebLogs
         //called after the block list form closes to refresh the form
         private void ChangeButtonNames() 
         {
+            dataGridView1.SuspendLayout();
             foreach (DataGridViewRow r in dataGridView1.Rows)
             {
-                string ip = r.Cells["IP"].Value.ToString();
+                if (r.Visible == true)
+                {
+                    string ip = r.Cells["IP"].Value.ToString();
 
-                //set the button name.
-                if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
-                {
-                    (r.Cells["Block"] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
-                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
-                }
-                else
-                {
-                    (r.Cells["Block"] as DataGridViewButtonCell).UseColumnTextForButtonValue = true;
+                    //MyLogger.DebugLog(EventLogEntryType.Warning, "IP is " + ip);
+
+                    //set the button name.
+                    if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
+                    {
+                        //MyLogger.DebugLog(EventLogEntryType.Warning, "IP is blocked, changing text");
+                        (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
+                    }
+                    else
+                    {
+                        (r.Cells["Block"] as DataGridViewButtonCell).Value = "Block IP";
+                    }
                 }
             }
+            dataGridView1.ResumeLayout();
+            dataGridView1.Refresh();
         }
 
         /// <summary>
@@ -246,6 +276,8 @@ namespace HomeServerConsoleTab.WebLogs
         private void HideOrShowRows()
         {
             showCount = dataGridView1.RowCount;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             dataGridView1.SuspendLayout();
 
             CurrencyManager cm = (CurrencyManager)BindingContext[dataGridView1.DataSource];
@@ -260,8 +292,11 @@ namespace HomeServerConsoleTab.WebLogs
                 //set the button name.
                 if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
                 {
-                    (r.Cells["Block"] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
                     (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
+                }
+                else
+                {
+                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "Block IP";
                 }
 
                 string user = r.Cells["User"].Value.ToString();
@@ -301,6 +336,8 @@ namespace HomeServerConsoleTab.WebLogs
             }
             
             cm.ResumeBinding();
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
             dataGridView1.ResumeLayout();
             UpdateLogCount();
         }
@@ -354,8 +391,7 @@ namespace HomeServerConsoleTab.WebLogs
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "Block")
             {
                 if (BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
-                {
-                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = false;
+                {                
                     (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Unblock";
                 }
             }
@@ -363,7 +399,7 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 if (BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).UseColumnTextForButtonValue = true;
+                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block IP";
                 }
             }
         }
@@ -418,6 +454,18 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 MyLogger.Log(EventLogEntryType.Warning, ex);
                 MaxEntries = defaultMaxEntries;
+            }
+        }
+
+        private void DisableForm()
+        {
+            if (licenseAccepted == LICENSE_ACCEPTED)
+            {
+                this.Enabled = true;
+            }
+            else
+            {
+                this.Enabled = false;
             }
         }
     }

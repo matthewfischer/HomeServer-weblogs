@@ -67,6 +67,21 @@ namespace HomeServerConsoleTab.WebLogs.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Copyright (c) 2009, Matthew Fischer
+        ///All rights reserved.
+        ///
+        ///Redistribution and use in binary forms, with or without modification, are permitted provided that the following conditions are met:
+        ///   
+        ///    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+        ///    * Neither the name of the Matthew Fischer nor the names of its contributors may be used to endorse  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string License {
+            get {
+                return ResourceManager.GetString("License", resourceCulture);
+            }
+        }
+        
         internal static System.Drawing.Bitmap logs2 {
             get {
                 object obj = ResourceManager.GetObject("logs2", resourceCulture);

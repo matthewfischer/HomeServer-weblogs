@@ -10,7 +10,7 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) Button name change from block to unblock.
+//1) Button name change from block to unblock - why doesn't this repaint?
 //2) WishList: Change the safety mechanism for blocking to server subnet.
 
 //1.0.5.0
