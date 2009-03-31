@@ -1,0 +1,25 @@
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-29 12:22:30
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-29 12:22:30 W3SVC1 127.0.0.1 GET /Default.htm - 80 - 127.0.0.1 - 200 0 0
+2009-03-29 12:22:39 W3SVC1 127.0.0.1 GET /router_test_ext_3.txt - 80 - 127.0.0.1 WinHttp+/+1.0 200 0 0
+2009-03-29 12:22:41 W3SVC1 127.0.0.1 GET /router_test_ext_4.txt - 443 - 127.0.0.1 WinHttp+/+1.0 200 0 0
+2009-03-29 12:23:35 W3SVC1 127.0.0.1 GET /Default.htm - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/default.aspx gotodefault=true 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/css.css - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_topbar.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_lightblue_u.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/spacer.gif - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_lightblue_ul.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_Qlogo_r.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_button.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_lightblue_ur.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_landingpage_l.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_landingpage_main.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+2009-03-29 12:23:39 W3SVC1 127.0.0.1 GET /home/images/i_landingpage_r.png - 80 - 127.0.0.1 Mozilla/4.0+(compatible;+MSIE+7.0;+Windows+NT+5.2;+.NET+CLR+1.1.4322;+.NET+CLR+2.0.50727;+.NET+CLR+3.0.4506.2152;+.NET+CLR+3.5.30729) 200 0 0
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-29 19:13:24
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-29 19:13:24 W3SVC1 127.0.0.1 GET /Default.htm - 80 - 127.0.0.1 - 200 0 0

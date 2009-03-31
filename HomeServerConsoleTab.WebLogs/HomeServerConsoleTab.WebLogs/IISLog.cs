@@ -13,7 +13,7 @@ namespace HomeServerConsoleTab.WebLogs
         s_sitename,    //not useful
         s_ip,          //not useful
         cs_method,     //not useful
-        cs_uri_stem,   //future
+        cs_uri_stem,   //used
         cs_uri_query,  //?
         s_port,        //not useful
         cs_username,   //used

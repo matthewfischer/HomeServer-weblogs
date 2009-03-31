@@ -10,14 +10,15 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) Button name change from block to unblock - why doesn't this repaint?
-//2) WishList: Change the safety mechanism for blocking to server subnet.
+//1) Sorting breaks the hiding
+//2) Crashes
 
 //1.0.5.0
 //-------
 //1) IP blocking/unblocking
 //2) Default range down to 500, range default saved in registry.
 //3) Speed improvements
+//4) License requirements
 
 namespace HomeServerConsoleTab.WebLogs
 {

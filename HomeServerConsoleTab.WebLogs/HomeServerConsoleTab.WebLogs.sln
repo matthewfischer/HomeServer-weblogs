@@ -7,6 +7,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "WebLogsInstaller", "WebLogs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IISIP", "IISIP\IISIP.csproj", "{552C4EC5-772A-42E9-A5FC-49C81502D75C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLogsTester", "WebLogsTester\WebLogsTester.csproj", "{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,16 @@ Global
 		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{552C4EC5-772A-42E9-A5FC-49C81502D75C}.Release|x86.ActiveCfg = Release|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0F44B106-C078-4767-BFE9-6D6AE0B10DFE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,45 @@
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 02:00:01
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 02:00:01 W3SVC1 127.0.0.1 GET /MediaSmartUpdate/rest/interval - 80 - 127.0.0.1 - 200 0 0
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 02:59:46
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 02:59:45 W3SVC1 192.168.0.111 POST /Default.htm - 80 - 85.190.0.3 - 405 0 0
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 04:03:06
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 04:03:06 W3SVC1 192.168.0.111 GET /med_agg_cfg.xml proc=548 80 - 192.168.0.114 - 200 0 0
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 04:27:08
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 04:27:08 W3SVC1 192.168.0.111 OPTIONS / - 80 - 192.168.0.114 Microsoft-WebDAV-MiniRedir/5.1.2600 200 0 0
+2009-03-17 04:27:08 W3SVC1 192.168.0.111 PROPFIND /C$ - 80 - 192.168.0.114 Microsoft-WebDAV-MiniRedir/5.1.2600 501 0 0
+2009-03-17 04:27:08 W3SVC1 192.168.0.111 PROPFIND /C$ - 80 - 192.168.0.114 Microsoft-WebDAV-MiniRedir/5.1.2600 501 0 0
+2009-03-17 04:27:08 W3SVC1 192.168.0.111 PROPFIND /C$ - 80 - 192.168.0.114 Microsoft-WebDAV-MiniRedir/5.1.2600 501 0 0
+2009-03-17 04:27:08 W3SVC1 192.168.0.111 PROPFIND /C$ - 80 - 192.168.0.114 Microsoft-WebDAV-MiniRedir/5.1.2600 501 0 0
+2009-03-17 04:27:19 W3SVC1 192.168.0.111 PROPFIND /C$ - 80 - 192.168.0.114 Microsoft-WebDAV-MiniRedir/5.1.2600 501 0 0
+2009-03-17 04:32:03 W3SVC1 127.0.0.1 GET /MediaSmartUpdate/rest/settings - 80 - 127.0.0.1 - 200 0 0
+2009-03-17 04:32:08 W3SVC1 127.0.0.1 GET /MediaSmartUpdate/rest/catalog/cancelupdate - 80 - 127.0.0.1 - 200 0 0
+2009-03-17 04:32:30 W3SVC1 127.0.0.1 GET /MediaSmartUpdate/rest/settings - 80 - 127.0.0.1 - 200 0 0
+2009-03-17 04:32:30 W3SVC1 127.0.0.1 GET /MediaSmartUpdate/rest/catalog/cancelupdate - 80 - 127.0.0.1 - 200 0 0
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 14:23:55
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 14:23:55 W3SVC1 192.168.0.111 HEAD /Default.htm - 80 - 192.168.0.113 - 200 0 0
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 20:03:50
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 20:03:50 W3SVC1 192.168.0.111 POST /cgi-bin/textenv.pl - 80 - 211.95.78.70 - 404 0 3
+2009-03-17 20:03:50 W3SVC1 192.168.0.111 POST /cgi-bin/textenv.pl - 80 - 211.95.78.70 - 404 0 3
+#Software: Microsoft Internet Information Services 6.0
+#Version: 1.0
+#Date: 2009-03-17 23:19:00
+#Fields: date time s-sitename s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status 
+2009-03-17 23:19:00 W3SVC1 192.168.0.111 GET /med_agg_cfg.xml proc=552 80 - 192.168.0.150 - 200 0 0

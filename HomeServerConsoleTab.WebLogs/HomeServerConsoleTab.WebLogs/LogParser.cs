@@ -7,9 +7,9 @@ using System.Globalization;
 
 namespace HomeServerConsoleTab.WebLogs
 {
-    class LogParser
+    public class LogParser
     {
-        private const string logDir = @"C:\Windows\System32\LogFiles\W3SVC1\";
+        private string logDir = @"C:\Windows\System32\LogFiles\W3SVC1\";
         private int max;
 
         internal class SortableFileList : IComparer<FileInfo>
@@ -21,6 +21,12 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
+        public List<string[]> ParseAllLogs(int maxEntries, string path)
+        {
+            logDir = path;
+            return ParseAllLogs(maxEntries);
+        }
+
         public List<string[]> ParseAllLogs(int maxEntries)
         {
             max = maxEntries;
@@ -28,13 +34,13 @@ namespace HomeServerConsoleTab.WebLogs
 
             List<string[]> parsedLines = new List<string[]>();            
 
-            foreach (FileInfo f in listLogs())
+            foreach (FileInfo f in ListLogs())
             {
-                List<string[]> tmp = parseLog(f);
+                List<string[]> tmp = ParseLog(f);
                 if (tmp != null)
                 {
                     parsedLines.AddRange(tmp);
-                    MyLogger.DebugLog("max = " + max + " - pl = " + parsedLines.Count);
+                    //MyLogger.DebugLog("max = " + max + " - pl = " + parsedLines.Count);
                     if (max <= 0)
                     {
                         return parsedLines;
@@ -45,19 +51,19 @@ namespace HomeServerConsoleTab.WebLogs
             return parsedLines;
         }
 
-        private IComparer<FileInfo> sortByLastWriteTime()
+        private IComparer<FileInfo> SortByLastWriteTime()
         {
             return (IComparer<FileInfo>)new SortableFileList();
         }
 
-        private FileInfo[] listLogs()
+        public FileInfo[] ListLogs()
         {            
             try
             {
                 DirectoryInfo dir = new DirectoryInfo(logDir);
                 FileInfo [] flist = dir.GetFiles("*.log");
                 //MyLogger.DebugLog("first entry = " + flist[0].LastWriteTime.ToString());
-                Array.Sort(flist, sortByLastWriteTime());
+                Array.Sort(flist, SortByLastWriteTime());
                 //MyLogger.DebugLog("SORTED first entry = " + flist[0].LastWriteTime.ToString());
                 return flist;
             }
@@ -87,7 +93,7 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        public List<string []> parseLog(FileInfo log)
+        public List<string []> ParseLog(FileInfo log)
         {
             List<string []> parsedLines = new List<string[]>();
             FileStream fs = null;
