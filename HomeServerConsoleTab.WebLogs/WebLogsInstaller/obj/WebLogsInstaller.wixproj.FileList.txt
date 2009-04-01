@@ -1,5 +1,0 @@
-C:\Documents and Settings\mfisch\My Documents\Visual Studio 2008\Projects\HomeServerConsoleTab.WebLogs\WebLogsInstaller\bin\Release\WebLogsInstaller.msi
-C:\Documents and Settings\mfisch\My Documents\Visual Studio 2008\Projects\HomeServerConsoleTab.WebLogs\WebLogsInstaller\bin\Release\WebLogsInstaller.wixpdb
-C:\Documents and Settings\mfisch\Desktop\WebLogs\HomeServerConsoleTab.WebLogs\WebLogsInstaller\bin\Release\WebLogsInstaller.msi
-C:\Documents and Settings\mfisch\Desktop\WebLogs\HomeServerConsoleTab.WebLogs\WebLogsInstaller\bin\Release\WebLogsInstaller.wixpdb
-obj\Release\WebLogsInstaller.wixobj
