@@ -38,6 +38,8 @@ namespace HomeServerConsoleTab.WebLogs
         private IConsoleServices m_CS;
         private DataSet logEntries = null;
 
+        #region Initialization
+
         public LogControl(IConsoleServices cs)
         {
             m_CS = cs;
@@ -80,8 +82,10 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void DisableBlockButtons()
         {
-            
+
         }
+
+        #endregion
 
         #region DataHandlerAndLoader
 
@@ -97,6 +101,19 @@ namespace HomeServerConsoleTab.WebLogs
             row["Date"] = parser.ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
             row["User"] = entry[(int)IISLog.cs_username];
             row["URIStem"] = entry[(int)IISLog.cs_uri_stem];
+
+            if (BlockedIPs.GetInstance().IsThisIPBlocked(entry[(int)IISLog.c_ip]))
+            {
+                //MyLogger.DebugLog("IP " + entry[(int)IISLog.c_ip] + " is blocked");
+                row["Block"] = "Unblock";
+            }
+            else
+            {
+                //MyLogger.DebugLog("IP " + entry[(int)IISLog.c_ip] + " is NOT blocked");
+                row["Block"] = "Block IP";
+            }
+            
+
             table.Rows.Add(row);
         }
 
@@ -111,6 +128,7 @@ namespace HomeServerConsoleTab.WebLogs
             logDataTable.Columns.Add("Date", typeof(DateTime));
             logDataTable.Columns.Add("User", typeof(string));
             logDataTable.Columns.Add("URIStem", typeof(string));
+            logDataTable.Columns.Add("Block", typeof(string));
 
             logData.Tables.Add(logDataTable);
 
@@ -199,6 +217,7 @@ namespace HomeServerConsoleTab.WebLogs
         #region RowHideShow
 
         //called after the block list form closes to refresh the form
+        //UNUSED
         private void ChangeButtonNames() 
         {
             dataGridView1.SuspendLayout();
@@ -225,6 +244,27 @@ namespace HomeServerConsoleTab.WebLogs
             }
             dataGridView1.ResumeLayout();
             dataGridView1.Refresh();
+        }
+
+        private void MarkIPBlocked(string ip)
+        {
+            MarkIP(ip, "Unblock");
+        }
+
+        private void MarkIPUnblocked(string ip)
+        {
+            MarkIP(ip, "Block IP");
+        }
+
+        private void MarkIP(string ip, string toMark)
+        {
+            foreach (DataRow r in logEntries.Tables["Logs"].Rows)
+            {
+                if (r["IP"].ToString().Equals(ip))
+                {
+                    r["Block"] = toMark;
+                }
+            }
         }
 
         private void HideOrShowRows()
@@ -296,7 +336,7 @@ namespace HomeServerConsoleTab.WebLogs
             dataGridView1.Refresh();
 
             UpdateLogCount();
-            ChangeButtonNames();
+            //ChangeButtonNames();
 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
@@ -330,14 +370,14 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 if (BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {                
-                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Unblock";
+                    MarkIPBlocked(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
                 }
             }
             else if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
             {
                 if (BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-                    (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewButtonCell).Value = "Block IP";
+                    MarkIPUnblocked(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
                 }
             }
         }
@@ -360,7 +400,7 @@ namespace HomeServerConsoleTab.WebLogs
         {
             BlockedSitesForm bs = new BlockedSitesForm();
             bs.ShowDialog();
-            ChangeButtonNames();
+            //ChangeButtonNames();
         }
 
         #endregion

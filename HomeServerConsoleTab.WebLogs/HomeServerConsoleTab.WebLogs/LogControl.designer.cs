@@ -179,6 +179,7 @@ namespace HomeServerConsoleTab.WebLogs
             // Block
             // 
             this.Block.HeaderText = "Block IP";
+            this.Block.DataPropertyName = "Block";
             this.Block.Name = "Block";
             this.Block.ReadOnly = true;
             this.Block.Text = "Block IP";
