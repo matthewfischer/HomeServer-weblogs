@@ -11,6 +11,12 @@ namespace HomeServerConsoleTab.WebLogs
     {
         private string logDir = @"C:\Windows\System32\LogFiles\W3SVC1\";
         private int max;
+        private int numberLoaded = 0;
+
+        public int GetNumberLoaded()
+        {
+            return numberLoaded;
+        }
 
         internal class SortableFileList : IComparer<FileInfo>
         {
@@ -29,6 +35,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         public List<string[]> ParseAllLogs(int maxEntries)
         {
+            numberLoaded = 0;
             max = maxEntries;
             MyLogger.DebugLog("File Looper: Loading max of " + max + " logs");
 
@@ -39,6 +46,7 @@ namespace HomeServerConsoleTab.WebLogs
                 List<string[]> tmp = ParseLog(f);
                 if (tmp != null)
                 {
+                    numberLoaded += tmp.Count;
                     parsedLines.AddRange(tmp);
                     //MyLogger.DebugLog("max = " + max + " - pl = " + parsedLines.Count);
                     if (max <= 0)

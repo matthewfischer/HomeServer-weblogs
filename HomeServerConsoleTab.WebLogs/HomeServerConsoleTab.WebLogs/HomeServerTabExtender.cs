@@ -10,8 +10,8 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) Sorting breaks the hiding
-//2) Crashes
+//1) background color of the checkboxes
+//2) button name painting
 
 //1.0.5.0
 //-------

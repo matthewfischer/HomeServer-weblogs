@@ -51,15 +51,15 @@ namespace HomeServerConsoleTab.WebLogs
             this.dns = new System.Windows.Forms.DataGridViewButtonColumn();
             this.Block = new System.Windows.Forms.DataGridViewButtonColumn();
             this.URIStem = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.localhostCheckBox = new System.Windows.Forms.CheckBox();
+            this.localNetworkCheckBox = new System.Windows.Forms.CheckBox();
+            this.anonymousCheckBox = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.consoleToolBarButton1 = new Microsoft.HomeServer.Controls.ConsoleToolBarButton();
             this.consoleToolBar1 = new Microsoft.HomeServer.Controls.ConsoleToolBar();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.mediaCollectorCheckBox = new System.Windows.Forms.CheckBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.blockList = new System.Windows.Forms.Button();
@@ -114,7 +114,7 @@ namespace HomeServerConsoleTab.WebLogs
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridView1.Size = new System.Drawing.Size(979, 480);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
@@ -194,42 +194,42 @@ namespace HomeServerConsoleTab.WebLogs
             this.URIStem.ToolTipText = "Requested URL";
             this.URIStem.Width = 313;
             // 
-            // checkBox1
+            // localhostCheckBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(472, 34);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(103, 17);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Hide Localhost?";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.localhostCheckBox.AutoSize = true;
+            this.localhostCheckBox.Checked = true;
+            this.localhostCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.localhostCheckBox.Location = new System.Drawing.Point(472, 34);
+            this.localhostCheckBox.Name = "localhostCheckBox";
+            this.localhostCheckBox.Size = new System.Drawing.Size(103, 17);
+            this.localhostCheckBox.TabIndex = 2;
+            this.localhostCheckBox.Text = "Hide Localhost?";
+            this.localhostCheckBox.UseVisualStyleBackColor = true;
+            this.localhostCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
-            // checkBox2
+            // localNetworkCheckBox
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = true;
-            this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox2.Location = new System.Drawing.Point(339, 34);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(126, 17);
-            this.checkBox2.TabIndex = 3;
-            this.checkBox2.Text = "Hide Local Network?";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            this.localNetworkCheckBox.AutoSize = true;
+            this.localNetworkCheckBox.Checked = true;
+            this.localNetworkCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.localNetworkCheckBox.Location = new System.Drawing.Point(339, 34);
+            this.localNetworkCheckBox.Name = "localNetworkCheckBox";
+            this.localNetworkCheckBox.Size = new System.Drawing.Size(126, 17);
+            this.localNetworkCheckBox.TabIndex = 3;
+            this.localNetworkCheckBox.Text = "Hide Local Network?";
+            this.localNetworkCheckBox.UseVisualStyleBackColor = true;
+            this.localNetworkCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
-            // checkBox3
+            // anonymousCheckBox
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(220, 34);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(112, 17);
-            this.checkBox3.TabIndex = 4;
-            this.checkBox3.Text = "Hide Anonymous?";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            this.anonymousCheckBox.AutoSize = true;
+            this.anonymousCheckBox.Location = new System.Drawing.Point(220, 34);
+            this.anonymousCheckBox.Name = "anonymousCheckBox";
+            this.anonymousCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.anonymousCheckBox.TabIndex = 4;
+            this.anonymousCheckBox.Text = "Hide Anonymous?";
+            this.anonymousCheckBox.UseVisualStyleBackColor = true;
+            this.anonymousCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // statusStrip1
             // 
@@ -285,17 +285,18 @@ namespace HomeServerConsoleTab.WebLogs
             this.consoleToolBar1.TabIndex = 7;
             this.consoleToolBar1.Text = "consoleToolBar1";
             // 
-            // checkBox4
+            // mediaCollectorCheckBox
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = true;
-            this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox4.Location = new System.Drawing.Point(582, 34);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(211, 17);
-            this.checkBox4.TabIndex = 9;
-            this.checkBox4.Text = "Hide Media Collector Config Requests?";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.mediaCollectorCheckBox.AutoSize = true;
+            this.mediaCollectorCheckBox.Checked = true;
+            this.mediaCollectorCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mediaCollectorCheckBox.Location = new System.Drawing.Point(582, 34);
+            this.mediaCollectorCheckBox.Name = "mediaCollectorCheckBox";
+            this.mediaCollectorCheckBox.Size = new System.Drawing.Size(211, 17);
+            this.mediaCollectorCheckBox.TabIndex = 9;
+            this.mediaCollectorCheckBox.Text = "Hide Media Collector Config Requests?";
+            this.mediaCollectorCheckBox.UseVisualStyleBackColor = true;
+            this.mediaCollectorCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // textBox1
             // 
@@ -333,11 +334,11 @@ namespace HomeServerConsoleTab.WebLogs
             this.Controls.Add(this.blockList);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.checkBox4);
+            this.Controls.Add(this.mediaCollectorCheckBox);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.checkBox3);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.anonymousCheckBox);
+            this.Controls.Add(this.localNetworkCheckBox);
+            this.Controls.Add(this.localhostCheckBox);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.consoleToolBar1);
             this.Name = "LogControl";
@@ -356,15 +357,15 @@ namespace HomeServerConsoleTab.WebLogs
         #endregion
 
         private DataGridView dataGridView1;
-        private CheckBox checkBox1;
-        private CheckBox checkBox2;
-        private CheckBox checkBox3;
+        private CheckBox localhostCheckBox;
+        private CheckBox localNetworkCheckBox;
+        private CheckBox anonymousCheckBox;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
         private ConsoleToolBarButton consoleToolBarButton1;
         private ConsoleToolBar consoleToolBar1;
         private ToolStripProgressBar toolStripProgressBar1;
-        private CheckBox checkBox4;
+        private CheckBox mediaCollectorCheckBox;
         private TextBox textBox1;
         private Label label1;
         private Button blockList;

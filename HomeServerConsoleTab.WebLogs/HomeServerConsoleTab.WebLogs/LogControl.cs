@@ -22,7 +22,7 @@ namespace HomeServerConsoleTab.WebLogs
         public static String LOCALHOST = "127.0.0.1";
         public static String LOCAL_SUBNET = "192.168.";
         private const String EMPTY_USER = "-";
-        private const String MEDIA_COLLECTOR_CONF = "/med_agg_cfg.xml";
+        private const String MEDIA_COLLECTOR_CONF = @"/med_agg_cfg.xml";
         private const String whoisServerUrl = "http://ws.arin.net/whois/?queryinput={0}";
         private const String geoUrl = "http://api.hostip.info/get_html.php?ip={0}&position=true";
         private const String dnsUrl = "http://network-tools.com/default.asp?prog=dnsrec&host={0}";
@@ -37,14 +37,14 @@ namespace HomeServerConsoleTab.WebLogs
         
         private IConsoleServices m_CS;
         private DataSet logEntries = null;
-        private int showCount = 0;
 
         public LogControl(IConsoleServices cs)
         {
             m_CS = cs;
-            ReadRegistryEntries();
             InitializeComponent();
+            ReadRegistryEntries();
             SetupIPBlocking();
+            dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
         }
 
         private void ReadRegistryEntries()
@@ -53,9 +53,13 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 RegistryKey rk = Registry.LocalMachine;
                 rk = rk.OpenSubKey(@"SOFTWARE\WebLogsAddIn", false);
+
                 MyLogger.DebugLevel = (int)rk.GetValue("debug_level");
+
                 MaxEntries = (int)rk.GetValue("DefaultLoadedLogs", MaxEntries);
-                licenseAccepted = (int)rk.GetValue("LicenseAccepted", licenseAccepted);
+                textBox1.Text = MaxEntries.ToString();
+
+                licenseAccepted = (int)rk.GetValue("LicenseAccepted", licenseAccepted);                
             }
             catch (Exception e)
             {
@@ -76,56 +80,14 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void DisableBlockButtons()
         {
-            //dataGridView1.Columns["Block"].S
+            
         }
 
         #region DataHandlerAndLoader
 
-        private void LoadLogsWorker(object sender, DoWorkEventArgs e)
-        {
-            MyLogger.DebugLog("worker started");
-            try
-            {              
-                logBinding.SuspendBinding();
-                logEntries = GetEntriesAsDataSet();
-                logBinding.DataSource = logEntries;
-                logBinding.DataMember = "Logs";
-                logBinding.ResumeBinding();
-                dataGridView1.DataSource = logBinding;               
-
-                //hide or show based on the defaults
-                HideOrShowRows();
-            }
-
-            catch (Exception ex)
-            {
-                QMessageBox.Show("Error while loading the logs, please report this to the author: matt@mattfischer.com.  Thanks!",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                MyLogger.Log(EventLogEntryType.Error, ex);
-                return;
-            }
-            MyLogger.DebugLog("worker done");
-        }
-
-        private void LoadLogsWorker_Completed(object sender, RunWorkerCompletedEventArgs e)
-        {        
-            dataGridView1.ScrollBars = ScrollBars.Vertical;
-            dataGridView1.ResumeLayout();
-            dataGridView1.Refresh();
-            toolStripProgressBar1.Visible = false;
-            toolStripProgressBar1.Enabled = false;
-            consoleToolBarButton1.Enabled = true;
-            textBox1.Enabled = true;
-                        
-            this.UseWaitCursor = false;
-            this.Cursor = Cursors.Default;
-
-            UpdateLogCount();
-        }
-
         private void UpdateLogCount()
         {
-            toolStripStatusLabel1.Text = String.Format(countText, showCount, dataGridView1.RowCount);
+            toolStripStatusLabel1.Text = String.Format(countText, dataGridView1.RowCount, parser.GetNumberLoaded());
         }
 
         private void AddTableRow(DataTable table, string[] entry)
@@ -163,10 +125,7 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void LoadLogs()
         {
-            //setup background worker
-            BackgroundWorker backgroundWorker = new BackgroundWorker();
-            backgroundWorker.DoWork += new DoWorkEventHandler(LoadLogsWorker);
-            backgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(LoadLogsWorker_Completed);
+            dataGridView1.SuspendLayout();
 
             //clear out the datagrid
             if (logEntries != null)
@@ -177,40 +136,39 @@ namespace HomeServerConsoleTab.WebLogs
             //setup the UI stuff
             toolStripStatusLabel1.Text = "Loading logs, please wait...";
             this.UseWaitCursor = true;
-            consoleToolBarButton1.Enabled = false;
-            dataGridView1.SuspendLayout();
+            consoleToolBarButton1.Enabled = false;            
             toolStripProgressBar1.Enabled = true;
             textBox1.Enabled = false;
             toolStripProgressBar1.Visible = true;
-            dataGridView1.ScrollBars = ScrollBars.None;
 
-            //go do stuff
-            backgroundWorker.RunWorkerAsync();
+            //load the data
+            try
+            {
+                logBinding.SuspendBinding();
+                logEntries = GetEntriesAsDataSet();
+                logBinding.DataSource = logEntries;
+                logBinding.DataMember = "Logs";
+                logBinding.ResumeBinding();
+                dataGridView1.DataSource = logBinding;
+            }
+
+            catch (Exception ex)
+            {
+                QMessageBox.Show("Error while loading the logs, please report this to the author: matt@mattfischer.com.  Thanks!",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MyLogger.Log(EventLogEntryType.Error, ex);
+                return;
+            }
+
+            toolStripProgressBar1.Visible = false;
+            toolStripProgressBar1.Enabled = false;
+            consoleToolBarButton1.Enabled = true;
+            textBox1.Enabled = true;
+            this.UseWaitCursor = false;
+            this.Cursor = Cursors.Default;
+
+            HideOrShowRows();
         }
-
-        //unused!
-        //private void SaveSettingsToRegistry(int numberOfLogs)
-        //{
-        //    try
-        //    {
-        //        RegistryKey HKLMKey = Registry.LocalMachine;
-        //        RegistryKey SoftwareKey = HKLMKey.OpenSubKey("SOFTWARE");
-        //        RegistryKey WebLogsKey = HKLMKey.OpenSubKey("WebLogsAddIn");
-        //        if (WebLogsKey == null)
-        //        {
-        //            WebLogsKey = SoftwareKey.CreateSubKey("WebLogsAddIn");
-        //            WebLogsKey.SetValue("DefaultLoadedLogs", defaultMaxEntries);
-        //        }
-        //        else
-        //        {
-        //            MyLogger.DebugLog("No keys to set!");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        MyLogger.Log(EventLogEntryType.Error, e);
-        //    }
-        //}
 
         private void LogControl_Load(object sender, EventArgs e)
         {
@@ -227,9 +185,7 @@ namespace HomeServerConsoleTab.WebLogs
 
             //if it's still false, disable the form, if true, load the logs.
             if (licenseAccepted == LICENSE_ACCEPTED)
-            {
-                textBox1.Text = defaultMaxEntries.ToString();
-                dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
+            {               
                 LoadLogs();
             }
             else
@@ -248,16 +204,17 @@ namespace HomeServerConsoleTab.WebLogs
             dataGridView1.SuspendLayout();
             foreach (DataGridViewRow r in dataGridView1.Rows)
             {
-                if (r.Visible == true)
+                string ip = r.Cells["IP"].Value.ToString();
+                MyLogger.DebugLog("Row: " + r.Index + "\nIP: " + ip);
+
+                if ((ip.StartsWith(LOCAL_SUBNET)) || (ip.Equals(LOCALHOST)))
                 {
-                    string ip = r.Cells["IP"].Value.ToString();
-
-                    //MyLogger.DebugLog(EventLogEntryType.Warning, "IP is " + ip);
-
+                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "N/A";
+                }
+                else {
                     //set the button name.
                     if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
                     {
-                        //MyLogger.DebugLog(EventLogEntryType.Warning, "IP is blocked, changing text");
                         (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
                     }
                     else
@@ -270,14 +227,20 @@ namespace HomeServerConsoleTab.WebLogs
             dataGridView1.Refresh();
         }
 
-        /// <summary>
-        /// walks the data and hides or shows rows based on the state of the check-boxes.
-        /// </summary>
         private void HideOrShowRows()
         {
-            showCount = dataGridView1.RowCount;
+            HideOrShowRows(null, EventArgs.Empty);
+        }
+
+        // walks the data and hides or shows rows based on the state of the check-boxes.
+        private void HideOrShowRows(object sender, EventArgs e)
+        {
+            string filter = "";
+            bool firstClause = false;
+
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+
             dataGridView1.SuspendLayout();
 
             CurrencyManager cm = (CurrencyManager)BindingContext[dataGridView1.DataSource];
@@ -285,97 +248,72 @@ namespace HomeServerConsoleTab.WebLogs
 
             dataGridView1.ClearSelection();  //we can't hide cells that are selected, so clear the selection.
 
-            foreach (DataGridViewRow r in dataGridView1.Rows)
-            {               
-                string ip = r.Cells["IP"].Value.ToString();
+            toolStripStatusLabel1.Text = updatingString;
 
-                //set the button name.
-                if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
-                {
-                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
-                }
-                else
-                {
-                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "Block IP";
-                }
-
-                string user = r.Cells["User"].Value.ToString();
-                string uristem = r.Cells["URIStem"].Value.ToString();
-  
-                if ((checkBox1.Checked) && (ip.Equals(LOCALHOST)))
-                {
-                    showCount--;
-                    r.Visible = false;
-                    continue;
-                }
-
-                else if ((checkBox2.Checked) && (ip.StartsWith(LOCAL_SUBNET)))
-                {
-                    showCount--;
-                    r.Visible = false;
-                    continue;
-                }
-
-                else if ((checkBox3.Checked) && (user.Equals(EMPTY_USER)))
-                {
-                    showCount--;
-                    r.Visible = false;
-                    continue;
-                }
-
-                else if ((checkBox4.Checked) && (uristem.Equals(MEDIA_COLLECTOR_CONF)))
-                {
-                    showCount--;
-                    r.Visible = false;
-                    continue;
-                }
-                else
-                {
-                    r.Visible = true;  //default to visible
-                }
+            if (localhostCheckBox.Checked)
+            {
+                filter += "IP <> '" + LOCALHOST + "'";
+                firstClause = true;
             }
+            if (localNetworkCheckBox.Checked)
+            {
+                if (firstClause == true) {
+                    filter += " AND ";
+                }
+                else {
+                    firstClause = true;
+                }
+                filter += "IP not like '" + LOCAL_SUBNET + "%'";
+            }
+            if (anonymousCheckBox.Checked)
+            {
+                if (firstClause == true) {
+                    filter += " AND ";
+                }
+                else {
+                    firstClause = true;
+                }
+                filter += "USER <> '" + EMPTY_USER + "'";
+            }
+            if (mediaCollectorCheckBox.Checked)
+            {
+                if (firstClause == true)
+                {
+                    filter += " AND ";
+                }
+                else
+                {
+                    firstClause = true;
+                }
+                filter += "URIStem not like '" + MEDIA_COLLECTOR_CONF + "'";
+            }
+
+            MyLogger.DebugLog("filter = " + filter);
+            logBinding.Filter = filter;
             
             cm.ResumeBinding();
+            dataGridView1.ResumeLayout();
+            dataGridView1.Refresh();
+
+            UpdateLogCount();
+            ChangeButtonNames();
+
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
-            dataGridView1.ResumeLayout();
-            UpdateLogCount();
         }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            toolStripStatusLabel1.Text = updatingString;
-            //hide or unhide localhost
-            HideOrShowRows();
-        }
-
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            toolStripStatusLabel1.Text = updatingString;
-            //hide or unhide private subnet (192.168)
-            HideOrShowRows();
-        }
-
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
-        {
-            toolStripStatusLabel1.Text = updatingString;
-            //hide or show anonymous users (blank username)
-            HideOrShowRows();
-        }
-
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
-        {
-            toolStripStatusLabel1.Text = updatingString;
-            //hide or show media collector requests
-            HideOrShowRows();
-        }
-        
+       
         #endregion       
 
         #region ClickHandlers
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            //ignore row header clicks
+            if (e.RowIndex < 0)
+            {
+                return;
+            }
+
             if (dataGridView1.Columns[e.ColumnIndex].Name == "IPWhoIs")
             {
                 OpenWebpage(String.Format(whoisServerUrl, dataGridView1.Rows[e.RowIndex].Cells["IP"].Value));
@@ -444,7 +382,8 @@ namespace HomeServerConsoleTab.WebLogs
         {
             try
             {
-                MaxEntries = Int32.Parse(textBox1.Text);
+                int val = Int32.Parse(textBox1.Text);
+                MaxEntries = val;
                 MyLogger.DebugLog("MaxEntries changed to: " + MaxEntries);
                 RegistryKey rootKey = Registry.LocalMachine;
                 RegistryKey swKey = rootKey.OpenSubKey(@"SOFTWARE\WebLogsAddIn", true);              
