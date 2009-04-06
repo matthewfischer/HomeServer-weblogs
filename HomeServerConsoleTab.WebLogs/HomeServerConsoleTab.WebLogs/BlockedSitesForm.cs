@@ -54,8 +54,6 @@ namespace HomeServerConsoleTab.WebLogs
                 
                 toolStripStatusLabel1.Text = "Currently blocking " + BlockedIPs.GetInstance().BlockedSites.Count + " sites.";
             }
-
-
         }
 
         private DataSet BuildDataTable(List<IPAddressV4> blocks)

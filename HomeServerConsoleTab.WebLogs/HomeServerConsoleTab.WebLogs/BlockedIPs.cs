@@ -26,21 +26,6 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        public Dictionary<string, IPAddressV4> BlockedHash
-        {
-            get
-            {
-                if (site == null) 
-                {
-                    return null;
-                }
-                else 
-                {
-                    return site.GetBlockedIpAddressDictionary();
-                }
-            }
-        }
-
         public List<IPAddressV4> BlockedSites
         {
             get
@@ -122,6 +107,7 @@ namespace HomeServerConsoleTab.WebLogs
                 {
                     MyLogger.Log(EventLogEntryType.Information, "Blocking IP Address: " + ip.Address.ToString());
                     RootSite.BlockIpAddress(ip);
+                    this.ipHash = this.RootSite.GetBlockedIpAddressDictionary();
                     return true;
                 }
                 return false;
@@ -145,6 +131,7 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 MyLogger.Log(EventLogEntryType.Information, "Unblocking IP Address: " + ip.Address.ToString());
                 RootSite.UnBlockIpAddress(ip);
+                this.ipHash = this.RootSite.GetBlockedIpAddressDictionary();
                 return true;
             }
         }
@@ -161,6 +148,7 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 MyLogger.Log(EventLogEntryType.Information, "Unblocking ALL IP Address");
                 RootSite.UnBlockAllIpAddresses();
+                this.ipHash = new Dictionary<string, IPAddressV4>();
             }
         }
 

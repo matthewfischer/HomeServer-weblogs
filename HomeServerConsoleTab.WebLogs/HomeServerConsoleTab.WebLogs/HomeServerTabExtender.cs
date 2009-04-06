@@ -11,13 +11,11 @@ using System.Diagnostics;
 
 //Stuff to Fix:
 //1) background color of the checkboxes
+//2) have blocked sites dialog return a value if something changes and only re-draw then.
 
-//1.0.5.0
+//1.0.5.1
 //-------
-//1) IP blocking/unblocking
-//2) Default range down to 500, range default saved in registry.
-//3) Speed improvements
-//4) License requirements
+//1) fixed button names after blocking/unblocking
 
 namespace HomeServerConsoleTab.WebLogs
 {

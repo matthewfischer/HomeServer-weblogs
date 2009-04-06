@@ -31,6 +31,9 @@ namespace HomeServerConsoleTab.WebLogs
         private const int defaultMaxEntries = 500;
         private int MaxEntries = defaultMaxEntries;
 
+        private const string BLOCK_IP = "Block IP";
+        private const string UNBLOCK_IP = "Unblock";
+
         private const int LICENSE_REFUSED = 0;
         private const int LICENSE_ACCEPTED = 33;
         private int licenseAccepted = LICENSE_REFUSED;
@@ -104,16 +107,12 @@ namespace HomeServerConsoleTab.WebLogs
 
             if (BlockedIPs.GetInstance().IsThisIPBlocked(entry[(int)IISLog.c_ip]))
             {
-                //MyLogger.DebugLog("IP " + entry[(int)IISLog.c_ip] + " is blocked");
-                row["Block"] = "Unblock";
+                row["Block"] = UNBLOCK_IP;
             }
             else
             {
-                //MyLogger.DebugLog("IP " + entry[(int)IISLog.c_ip] + " is NOT blocked");
-                row["Block"] = "Block IP";
+                row["Block"] = BLOCK_IP;
             }
-            
-
             table.Rows.Add(row);
         }
 
@@ -216,55 +215,24 @@ namespace HomeServerConsoleTab.WebLogs
 
         #region RowHideShow
 
-        //called after the block list form closes to refresh the form
-        //UNUSED
-        private void ChangeButtonNames() 
+        private void MarkIPButtons()
         {
-            dataGridView1.SuspendLayout();
-            foreach (DataGridViewRow r in dataGridView1.Rows)
-            {
-                string ip = r.Cells["IP"].Value.ToString();
-                MyLogger.DebugLog("Row: " + r.Index + "\nIP: " + ip);
+            logBinding.SuspendBinding();
 
-                if ((ip.StartsWith(LOCAL_SUBNET)) || (ip.Equals(LOCALHOST)))
-                {
-                    (r.Cells["Block"] as DataGridViewButtonCell).Value = "N/A";
-                }
-                else {
-                    //set the button name.
-                    if (BlockedIPs.GetInstance().IsThisIPBlocked(ip) == true)
-                    {
-                        (r.Cells["Block"] as DataGridViewButtonCell).Value = "Unblock";
-                    }
-                    else
-                    {
-                        (r.Cells["Block"] as DataGridViewButtonCell).Value = "Block IP";
-                    }
-                }
-            }
-            dataGridView1.ResumeLayout();
-            dataGridView1.Refresh();
-        }
-
-        private void MarkIPBlocked(string ip)
-        {
-            MarkIP(ip, "Unblock");
-        }
-
-        private void MarkIPUnblocked(string ip)
-        {
-            MarkIP(ip, "Block IP");
-        }
-
-        private void MarkIP(string ip, string toMark)
-        {
             foreach (DataRow r in logEntries.Tables["Logs"].Rows)
             {
-                if (r["IP"].ToString().Equals(ip))
+                //set the button name.              
+                if (BlockedIPs.GetInstance().IsThisIPBlocked(r["IP"].ToString()) == true)
                 {
-                    r["Block"] = toMark;
+                    r["Block"] = UNBLOCK_IP;
+                }
+                else
+                {
+                    r["Block"] = BLOCK_IP;
                 }
             }
+            logBinding.ResumeBinding();
+            dataGridView1.Refresh();
         }
 
         private void HideOrShowRows()
@@ -366,18 +334,18 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 OpenWebpage(String.Format(dnsUrl, dataGridView1.Rows[e.RowIndex].Cells["IP"].Value));
             }
-            else if (dataGridView1.Columns[e.ColumnIndex].Name == "Block")
+            else if (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() == BLOCK_IP)
             {
                 if (BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
-                {                
-                    MarkIPBlocked(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                {
+                    MarkIPButtons();
                 }
             }
-            else if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
+            else if (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() == UNBLOCK_IP)
             {
                 if (BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-                    MarkIPUnblocked(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
+                    MarkIPButtons();
                 }
             }
         }
@@ -400,7 +368,7 @@ namespace HomeServerConsoleTab.WebLogs
         {
             BlockedSitesForm bs = new BlockedSitesForm();
             bs.ShowDialog();
-            //ChangeButtonNames();
+            MarkIPButtons();
         }
 
         #endregion
