@@ -5,6 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Windows.Forms;
 using Microsoft.HomeServer.Controls;
+using HomeServerConsoleTab.WebLogs;
 using System.Net;
 using IISIP;
 
@@ -67,7 +68,8 @@ namespace HomeServerConsoleTab.WebLogs
 
         private bool SafetyCheck(IPAddressV4 ip)
         {
-            bool check1 = (!ip.Address.ToString().StartsWith(LogControl.LOCAL_SUBNET));
+            IPAddress ipAddress = IPAddress.Parse(ip.Address);
+            bool check1 = (!IPAddressExtensions.GetInstance().IsLocalAddress(ipAddress));
             bool check2 = (!ip.Address.ToString().Equals(LogControl.LOCALHOST));
             if (check1 == false) 
             {

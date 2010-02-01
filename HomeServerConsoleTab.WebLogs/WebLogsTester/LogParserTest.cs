@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using NUnit.Framework;
 using NUnit.Core;
 using HomeServerConsoleTab.WebLogs;
@@ -66,6 +67,25 @@ namespace WebLogsTest
         public void LicenseTest()
         {
             //?            
+        }
+
+        [Test]
+        public void TestSameSubnet()
+        {
+            List<LocalNetworkInfo> lans = new List<LocalNetworkInfo>();
+            LocalNetworkInfo lan1 = new LocalNetworkInfo(IPAddress.Parse("192.168.0.1"), IPAddress.Parse("255.255.255.0"));
+            LocalNetworkInfo lan2 = new LocalNetworkInfo(IPAddress.Parse("1.2.3.4"), IPAddress.Parse("255.255.248.0"));
+            LocalNetworkInfo lan3 = new LocalNetworkInfo(IPAddress.Parse("5.6.7.8"), IPAddress.Parse("255.255.0.0"));
+            LocalNetworkInfo lan4 = new LocalNetworkInfo(IPAddress.Parse("9.10.11.12"), IPAddress.Parse("255.0.0.0"));
+            lans.Add(lan1);
+            lans.Add(lan2);
+
+            Assert.IsTrue(IPAddressExtensions.IsInSameSubnet(IPAddress.Parse("192.168.0.200"), lan1.IP, lan1.Subnet));
+            Assert.IsTrue(IPAddressExtensions.IsInSameSubnet(IPAddress.Parse("192.168.0.254"), lan1.IP, lan1.Subnet));
+            Assert.IsTrue(IPAddressExtensions.IsInSameSubnet(IPAddress.Parse("192.168.0.1"), lan1.IP, lan1.Subnet));
+            Assert.IsFalse(IPAddressExtensions.IsInSameSubnet(IPAddress.Parse("191.168.0.254"), lan1.IP, lan1.Subnet));
+            Assert.IsFalse(IPAddressExtensions.IsInSameSubnet(IPAddress.Parse("192.168.1.254"), lan1.IP, lan1.Subnet));
+            Assert.IsFalse(IPAddressExtensions.IsInSameSubnet(IPAddress.Parse("192.168.1.1"), lan1.IP, lan1.Subnet));
         }
     }
 }

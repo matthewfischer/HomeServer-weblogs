@@ -5,13 +5,13 @@ using System.Drawing;
 using System.Diagnostics;
 using System.Data;
 using System.Text;
+using System.Net;
 using System.Windows.Forms;
 using Microsoft.HomeServer.Extensibility;
 using Microsoft.HomeServer.Controls;
 using System.Security.Permissions;
 using Microsoft.Win32;
 using IISIP;
-
 
 namespace HomeServerConsoleTab.WebLogs
 {
@@ -20,9 +20,12 @@ namespace HomeServerConsoleTab.WebLogs
         private BindingSource logBinding = new BindingSource();
         private LogParser parser = new LogParser();
         public static String LOCALHOST = "127.0.0.1";
-        public static String LOCAL_SUBNET = "192.168.";
         private const String EMPTY_USER = "-";
         private const String MEDIA_COLLECTOR_CONF = @"/med_agg_cfg.xml";
+        private const String MEDIA_COLLECTOR_30_CONF = @"/MediaCollector/*";
+        private const String MEDIA_COLLECTOR_PUSH = @"/PushClient/*";
+        private const String ROUTER_TEST_INT = @"/router_test_int_*";
+        private const String ROUTER_TEST_EXT = @"/router_test_ext_*";
         private const String whoisServerUrl = "http://ws.arin.net/whois/?queryinput={0}";
         private const String geoUrl = "http://api.hostip.info/get_html.php?ip={0}&position=true";
         private const String dnsUrl = "http://network-tools.com/default.asp?prog=dnsrec&host={0}";
@@ -100,6 +103,22 @@ namespace HomeServerConsoleTab.WebLogs
         private void AddTableRow(DataTable table, string[] entry)
         {
             DataRow row = table.NewRow();
+            int foo = 0;
+            if (foo < 5)
+            {
+                foo++;
+                string b = "Line = ";
+                foreach (string s in entry)
+                {
+                    b += s + ", ";
+                }
+                MyLogger.DebugLog(b);
+                if (entry.Length != 14)
+                {
+                    MyLogger.DebugLog("the entry doesn't match the enum it has " + entry.Length + " entries");
+                }
+
+            }
             row["IP"] = entry[(int)IISLog.c_ip];
             row["Date"] = parser.ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
             row["User"] = entry[(int)IISLog.cs_username];
@@ -215,6 +234,34 @@ namespace HomeServerConsoleTab.WebLogs
 
         #region RowHideShow
 
+        private void HideLocalNetworkRows()
+        {
+            int i=0;
+            logBinding.SuspendBinding();
+            foreach (DataGridViewRow r in logEntries.Tables["Logs"].Rows)
+            {
+                i++;
+                try
+                {
+                    string ip = r.Cells["IP"].ToString();
+                    if (ip.Equals(LOCALHOST))
+                    {
+                        continue;
+                    }
+                    else if (!IPAddressExtensions.GetInstance().IsLocalAddress(IPAddress.Parse(ip)))
+                    {
+                        dataGridView1.Rows[i].Visible = false;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MyLogger.DebugLog(ex.Message);
+                }
+            }
+            logBinding.ResumeBinding();
+            dataGridView1.Refresh();
+        }
+
         private void MarkIPButtons()
         {
             logBinding.SuspendBinding();
@@ -263,16 +310,6 @@ namespace HomeServerConsoleTab.WebLogs
                 filter += "IP <> '" + LOCALHOST + "'";
                 firstClause = true;
             }
-            if (localNetworkCheckBox.Checked)
-            {
-                if (firstClause == true) {
-                    filter += " AND ";
-                }
-                else {
-                    firstClause = true;
-                }
-                filter += "IP not like '" + LOCAL_SUBNET + "%'";
-            }
             if (anonymousCheckBox.Checked)
             {
                 if (firstClause == true) {
@@ -293,18 +330,35 @@ namespace HomeServerConsoleTab.WebLogs
                 {
                     firstClause = true;
                 }
-                filter += "URIStem not like '" + MEDIA_COLLECTOR_CONF + "'";
+                filter += "URIStem not like '" + MEDIA_COLLECTOR_CONF + "' AND URIStem not like '" + MEDIA_COLLECTOR_30_CONF 
+                    + "' AND URIStem not like '" + MEDIA_COLLECTOR_PUSH + "'";
+            }
+            if (hideRouterTests.Checked)
+            {
+                if (firstClause == true)
+                {
+                    filter += " AND ";
+                }
+                else
+                {
+                    firstClause = true;
+                }
+                filter += "URIStem not like '" + ROUTER_TEST_EXT + "' AND URIStem not like '" + ROUTER_TEST_INT + "'";
             }
 
             MyLogger.DebugLog("filter = " + filter);
             logBinding.Filter = filter;
-            
+
+            if (localNetworkCheckBox.Checked)
+            {
+                //HideLocalNetworkRows();
+            }
+           
             cm.ResumeBinding();
             dataGridView1.ResumeLayout();
             dataGridView1.Refresh();
 
             UpdateLogCount();
-            //ChangeButtonNames();
 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;

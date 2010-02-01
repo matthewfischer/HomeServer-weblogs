@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{828C1C1E-161F-4F61-A582-106C710B39E1}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -52,11 +52,11 @@
   <ItemGroup>
     <Reference Include="HomeServerControls, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Windows Home Server\HomeServerControls.dll</HintPath>
+      <HintPath>.\HomeServerControls.dll</HintPath>
     </Reference>
-    <Reference Include="HomeServerExt, Version=1.0.0.1, Culture=neutral, PublicKeyToken=8b51ade925266ecf, processorArchitecture=x86">
+    <Reference Include="HomeServerExt, Version=1.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Windows Home Server\HomeServerExt.dll</HintPath>
+      <HintPath>.\HomeServerExt.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -68,6 +68,10 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WHSCommon, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\WHSCommon.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockedIPs.cs" />
@@ -79,6 +83,7 @@
     </Compile>
     <Compile Include="HomeServerTabExtender.cs" />
     <Compile Include="IISLog.cs" />
+    <Compile Include="IPHelpers.cs" />
     <Compile Include="LicenseForm.cs">
       <SubType>Form</SubType>
     </Compile>

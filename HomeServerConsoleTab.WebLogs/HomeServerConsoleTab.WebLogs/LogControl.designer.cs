@@ -63,6 +63,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.blockList = new System.Windows.Forms.Button();
+            this.hideRouterTests = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.consoleToolBar1.SuspendLayout();
@@ -178,8 +179,8 @@ namespace HomeServerConsoleTab.WebLogs
             // 
             // Block
             // 
-            this.Block.HeaderText = "Block IP";
             this.Block.DataPropertyName = "Block";
+            this.Block.HeaderText = "Block IP";
             this.Block.Name = "Block";
             this.Block.ReadOnly = true;
             this.Block.Text = "Block IP";
@@ -246,7 +247,7 @@ namespace HomeServerConsoleTab.WebLogs
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(139, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(148, 17);
             this.toolStripStatusLabel1.Text = "Loading logs, please wait...";
             // 
             // toolStripProgressBar1
@@ -293,9 +294,9 @@ namespace HomeServerConsoleTab.WebLogs
             this.mediaCollectorCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mediaCollectorCheckBox.Location = new System.Drawing.Point(582, 34);
             this.mediaCollectorCheckBox.Name = "mediaCollectorCheckBox";
-            this.mediaCollectorCheckBox.Size = new System.Drawing.Size(211, 17);
+            this.mediaCollectorCheckBox.Size = new System.Drawing.Size(130, 17);
             this.mediaCollectorCheckBox.TabIndex = 9;
-            this.mediaCollectorCheckBox.Text = "Hide Media Collector Config Requests?";
+            this.mediaCollectorCheckBox.Text = "Hide Media Collector?";
             this.mediaCollectorCheckBox.UseVisualStyleBackColor = true;
             this.mediaCollectorCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
@@ -328,10 +329,23 @@ namespace HomeServerConsoleTab.WebLogs
             this.blockList.UseVisualStyleBackColor = true;
             this.blockList.Click += new System.EventHandler(this.blockList_Click);
             // 
+            // hideRouterTests
+            // 
+            this.hideRouterTests.AutoSize = true;
+            this.hideRouterTests.Checked = true;
+            this.hideRouterTests.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.hideRouterTests.Location = new System.Drawing.Point(718, 34);
+            this.hideRouterTests.Name = "hideRouterTests";
+            this.hideRouterTests.Size = new System.Drawing.Size(118, 17);
+            this.hideRouterTests.TabIndex = 13;
+            this.hideRouterTests.Text = "Hide Router Tests?";
+            this.hideRouterTests.UseVisualStyleBackColor = true;
+            // 
             // LogControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.hideRouterTests);
             this.Controls.Add(this.blockList);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
@@ -378,5 +392,6 @@ namespace HomeServerConsoleTab.WebLogs
         private DataGridViewButtonColumn dns;
         private DataGridViewButtonColumn Block;
         private DataGridViewTextBoxColumn URIStem;
+        private CheckBox hideRouterTests;
     }
 }

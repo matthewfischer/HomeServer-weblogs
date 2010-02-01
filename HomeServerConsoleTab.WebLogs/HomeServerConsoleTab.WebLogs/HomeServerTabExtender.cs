@@ -13,9 +13,11 @@ using System.Diagnostics;
 //1) background color of the checkboxes
 //2) have blocked sites dialog return a value if something changes and only re-draw then.
 
-//1.0.5.1
+//1.0.6.0
 //-------
-//1) fixed button names after blocking/unblocking
+//1) read header fields
+//2) fix hide local subnet
+//3) hide router tests
 
 namespace HomeServerConsoleTab.WebLogs
 {
