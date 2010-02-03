@@ -340,6 +340,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.hideRouterTests.TabIndex = 13;
             this.hideRouterTests.Text = "Hide Router Tests?";
             this.hideRouterTests.UseVisualStyleBackColor = true;
+            this.hideRouterTests.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // LogControl
             // 

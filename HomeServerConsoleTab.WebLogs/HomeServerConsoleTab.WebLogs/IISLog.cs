@@ -4,23 +4,36 @@ using System.Text;
 
 namespace HomeServerConsoleTab.WebLogs
 {
-    //Example:
-    //2008-11-13 21:30:02 W3SVC1 127.0.0.1 GET /MediaSmartUpdate/rest/catalog/cancelupdate - 80 - 127.0.0.1 - 200 0 0
-    public enum IISLog
+    public class IISLogEntry
     {
-        date,          //used
-        time,          //used
-        s_sitename,    //not useful
-        s_ip,          //not useful
-        cs_method,     //not useful
-        cs_uri_stem,   //used
-        cs_uri_query,  //?
-        s_port,        //not useful
-        cs_username,   //used
-        c_ip,          //used
-        cs_user_agent, //future
-        sc_status,     //not used
-        sc_substatus,  //not used
-        sc_win32_status//not used
-    };    
+        public string date;
+        public string time;
+        public string cs_uri_stem;
+        public string cs_username;
+        public string c_ip;
+
+        public IISLogEntry(string eDate, string eTime, string eUriStem, string eUsername, string eIp)
+        {
+            date = eDate;
+            time = eTime;
+            cs_uri_stem = eUriStem;
+            cs_username = eUsername;
+            c_ip = eIp;
+        }
+    };   
+
+    public class IISLogEntryIndex
+    {
+        public const string DATE = "date";                 //used
+        public const string TIME = "time";                 //used
+        public const string CS_URI_STEM = "cs-uri-stem";   //used
+        public const string CS_USERNAME = "cs-username";   //used
+        public const string C_IP = "c-ip";                 //used
+
+        public int date = -1;
+        public int time = -1;
+        public int cs_uri_stem = -1;
+        public int cs_username = -1;
+        public int c_ip = -1;
+    }
 }

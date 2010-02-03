@@ -13,6 +13,17 @@ namespace HomeServerConsoleTab.WebLogs
         private int max;
         private int numberLoaded = 0;
 
+        private IISLogEntryIndex eIdx;
+        public IISLogEntryIndex GetEntryIndexes
+        {
+            get { return eIdx; }
+        }
+
+        public LogParser()
+        {
+            eIdx = new IISLogEntryIndex();
+        }
+
         public int GetNumberLoaded()
         {
             return numberLoaded;
@@ -27,23 +38,23 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        public List<string[]> ParseAllLogs(int maxEntries, string path)
+        public List<IISLogEntry> ParseAllLogs(int maxEntries, string path)
         {
             logDir = path;
             return ParseAllLogs(maxEntries);
         }
 
-        public List<string[]> ParseAllLogs(int maxEntries)
+        public List<IISLogEntry> ParseAllLogs(int maxEntries)
         {
             numberLoaded = 0;
             max = maxEntries;
             MyLogger.DebugLog("File Looper: Loading max of " + max + " logs");
 
-            List<string[]> parsedLines = new List<string[]>();            
+            List<IISLogEntry> parsedLines = new List<IISLogEntry>();
 
             foreach (FileInfo f in ListLogs())
             {
-                List<string[]> tmp = ParseLog(f);
+                List<IISLogEntry> tmp = ParseLog(f);
                 if (tmp != null)
                 {
                     numberLoaded += tmp.Count;
@@ -101,11 +112,54 @@ namespace HomeServerConsoleTab.WebLogs
             }
         }
 
-        public List<string []> ParseLog(FileInfo log)
+        public void UpdateLogFormat(string line)
         {
-            List<string []> parsedLines = new List<string[]>();
+            line = line.Substring("#Fields: ".Length);
+            string[] fields = line.Split(' ');
+            if ((fields == null) || (fields.Length < 1))
+            {
+                MyLogger.Log(EventLogEntryType.Warning, "Field delimited line is malformed: " + line);
+                return;
+            }
+
+            for (int i = 0; i < fields.Length; i++)
+            {
+                if (fields[i].Equals(IISLogEntryIndex.DATE))
+                {
+                    eIdx.date = i;
+                }
+                else if (fields[i].Equals(IISLogEntryIndex.TIME))
+                {
+                    eIdx.time = i;
+                }
+                else if (fields[i].Equals(IISLogEntryIndex.C_IP))
+                {
+                    eIdx.c_ip = i;
+                }
+                else if (fields[i].Equals(IISLogEntryIndex.CS_URI_STEM))
+                {
+                    eIdx.cs_uri_stem = i;
+                }
+                else if (fields[i].Equals(IISLogEntryIndex.CS_USERNAME))
+                {
+                    eIdx.cs_username = i;
+                }
+            }
+        }
+
+        public bool AreIndexesSet()
+        {
+            return ((eIdx.c_ip != -1) && (eIdx.cs_uri_stem != -1) && (eIdx.cs_username != -1)
+                && (eIdx.date != -1) && (eIdx.time != -1));
+        }
+
+        public List<IISLogEntry> ParseLog(FileInfo log)
+        {
+            List<IISLogEntry> parsedLines = new List<IISLogEntry>();
             FileStream fs = null;
             StreamReader SR = null;
+
+            eIdx = new IISLogEntryIndex();
 
             try
             {
@@ -115,10 +169,33 @@ namespace HomeServerConsoleTab.WebLogs
                 string line = SR.ReadLine();
                 while ((line != null) && (max > 0))
                 {
-                    if (line.StartsWith("#") == false)
+                    if (line.StartsWith("#Fields: "))
                     {
-                        max--;
-                        parsedLines.Add(line.Split(' '));
+                        UpdateLogFormat(line);
+                    }
+                    else if (line.StartsWith("#") == false)
+                    {
+                        if (AreIndexesSet())
+                        {
+                            string[] fields = line.Split(' ');
+                            try
+                            {
+                                IISLogEntry entry = new IISLogEntry(fields[eIdx.date], fields[eIdx.time],
+                                    fields[eIdx.cs_uri_stem], fields[eIdx.cs_uri_stem], fields[eIdx.c_ip]);
+                                parsedLines.Add(entry);
+                            }
+                            catch (Exception ex)
+                            {
+                                MyLogger.Log(EventLogEntryType.Warning, "Error when parsing line: " + line);
+                            }
+                            max--;
+                        }
+                        else
+                        {
+                            //XXX - a pop-up would be helpful here.
+                            MyLogger.Log(EventLogEntryType.Error, "File is missing critical fields or there was an earlier error in"
+                             + " parsing field headers.  File = " + log.FullName);
+                        }
                     }
                     line = SR.ReadLine();
                 }

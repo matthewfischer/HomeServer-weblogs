@@ -19,31 +19,40 @@ namespace WebLogsTest
             string path = @"..\..\sample logs\";
             LogParser lp = new LogParser();
 
-            //max logs count
-            List<string[]> logs1 = lp.ParseAllLogs(100, path);
-            Console.Out.WriteLine("Found " + logs1.Count + " logs");
-            Assert.AreEqual(100, logs1.Count);
-            List<string[]> logs2 = lp.ParseAllLogs(1, path);
+            //max logs count check
+            List<IISLogEntry> logs2 = lp.ParseAllLogs(1, path);
             Console.Out.WriteLine("Found " + logs2.Count + " logs");
             Assert.AreEqual(1, logs2.Count);
-            List<string[]> logs3 = lp.ParseAllLogs(500, path);
-            Console.Out.WriteLine("Found " + logs3.Count + " logs");
-            Assert.AreEqual(500, logs3.Count);
-            List<string[]> logs4 = lp.ParseAllLogs(500000, path);
-            Console.Out.WriteLine("Found " + logs4.Count + " logs");
-            Assert.GreaterOrEqual(500000, logs4.Count);
+
+            //make sure the iterators work
+            List<IISLogEntry> logs1 = lp.ParseAllLogs(50000, path);
+            //make sure we read the indexes right
+            Assert.AreNotEqual(-1, lp.GetEntryIndexes.c_ip);
+            Assert.AreNotEqual(-1, lp.GetEntryIndexes.cs_uri_stem);
+            Assert.AreNotEqual(-1, lp.GetEntryIndexes.cs_username);
+            Assert.AreNotEqual(-1, lp.GetEntryIndexes.date);
+            Assert.AreNotEqual(-1, lp.GetEntryIndexes.time);
+            Console.Out.WriteLine("Found " + logs1.Count + " logs");
 
             //check the log files for the entries we use.
-            foreach (string[] log in logs4)
+            foreach (IISLogEntry log in logs1)
             {
-                Assert.IsNotNull(log[0]);
-                Assert.IsNotNull(log[1]);
-                Assert.IsNotNull(log[5]);
-                Assert.IsNotNull(log[8]);
-                Assert.IsNotNull(log[9]);
+                Assert.IsNotNull(log.date);
+                Assert.IsNotEmpty(log.date);
+                Assert.IsNotNull(log.time);
+                Assert.IsNotEmpty(log.time);
+                Assert.IsNotNull(log.c_ip);
+                Assert.IsNotEmpty(log.c_ip);
+                Assert.IsNotNull(log.cs_uri_stem);
+                Assert.IsNotEmpty(log.cs_uri_stem);
+                Assert.IsNotNull(log.cs_username);
+                Assert.IsNotEmpty(log.cs_username);
+                Assert.IsNotNull(log.time);
+                Assert.IsNotEmpty(log.time);
+
 
                 //check date/time parsing
-                DateTime dt = lp.ParseIISDateTime(log[0], log[1]);
+                DateTime dt = lp.ParseIISDateTime(log.date, log.time);
                 Assert.IsNotNull(dt);
                 Assert.AreNotEqual(dt, DateTime.MinValue);
             }

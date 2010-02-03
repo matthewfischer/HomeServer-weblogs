@@ -100,31 +100,15 @@ namespace HomeServerConsoleTab.WebLogs
             toolStripStatusLabel1.Text = String.Format(countText, dataGridView1.RowCount, parser.GetNumberLoaded());
         }
 
-        private void AddTableRow(DataTable table, string[] entry)
+        private void AddTableRow(DataTable table, IISLogEntry entry)
         {
             DataRow row = table.NewRow();
-            int foo = 0;
-            if (foo < 5)
-            {
-                foo++;
-                string b = "Line = ";
-                foreach (string s in entry)
-                {
-                    b += s + ", ";
-                }
-                MyLogger.DebugLog(b);
-                if (entry.Length != 14)
-                {
-                    MyLogger.DebugLog("the entry doesn't match the enum it has " + entry.Length + " entries");
-                }
+            row["IP"] = entry.c_ip;
+            row["Date"] = parser.ParseIISDateTime(entry.date, entry.time);
+            row["User"] = entry.cs_username;
+            row["URIStem"] = entry.cs_uri_stem;
 
-            }
-            row["IP"] = entry[(int)IISLog.c_ip];
-            row["Date"] = parser.ParseIISDateTime(entry[(int)IISLog.date], entry[(int)IISLog.time]);
-            row["User"] = entry[(int)IISLog.cs_username];
-            row["URIStem"] = entry[(int)IISLog.cs_uri_stem];
-
-            if (BlockedIPs.GetInstance().IsThisIPBlocked(entry[(int)IISLog.c_ip]))
+            if (BlockedIPs.GetInstance().IsThisIPBlocked(entry.c_ip))
             {
                 row["Block"] = UNBLOCK_IP;
             }
@@ -151,9 +135,9 @@ namespace HomeServerConsoleTab.WebLogs
             logData.Tables.Add(logDataTable);
 
             logDataTable.BeginLoadData();
-            foreach (string[] s in parser.ParseAllLogs(MaxEntries))
+            foreach (IISLogEntry e in parser.ParseAllLogs(MaxEntries))
             {
-                AddTableRow(logDataTable, s);
+                AddTableRow(logDataTable, e);
             }
             logDataTable.EndLoadData();
             return logData;
@@ -190,7 +174,7 @@ namespace HomeServerConsoleTab.WebLogs
 
             catch (Exception ex)
             {
-                QMessageBox.Show("Error while loading the logs, please report this to the author: matt@mattfischer.com.  Thanks!",
+                QMessageBox.Show("Error while loading the logs, please report this to the author: matt+whs@mattfischer.com.  Thanks!",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 MyLogger.Log(EventLogEntryType.Error, ex);
                 return;
@@ -246,11 +230,13 @@ namespace HomeServerConsoleTab.WebLogs
                     string ip = r.Cells["IP"].ToString();
                     if (ip.Equals(LOCALHOST))
                     {
+                        MyLogger.DebugLog("IP = Localhost");
                         continue;
                     }
                     else if (!IPAddressExtensions.GetInstance().IsLocalAddress(IPAddress.Parse(ip)))
                     {
-                        dataGridView1.Rows[i].Visible = false;
+                        MyLogger.DebugLog("IP " + ip + " is on local subnet");
+                        //dataGridView1.Rows[i].Visible = false;
                     }
                 }
                 catch (Exception ex)
@@ -351,7 +337,7 @@ namespace HomeServerConsoleTab.WebLogs
 
             if (localNetworkCheckBox.Checked)
             {
-                //HideLocalNetworkRows();
+                HideLocalNetworkRows();
             }
            
             cm.ResumeBinding();

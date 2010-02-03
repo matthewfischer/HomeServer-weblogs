@@ -15,9 +15,13 @@ using System.Diagnostics;
 
 //1.0.6.0
 //-------
-//1) read header fields
-//2) fix hide local subnet
-//3) hide router tests
+//1) fix hide local subnet
+//2) hide router tests
+//3) handle MC 3.0 calls
+
+//Future ideas:
+//1) show the http status (tool tip somewhere maybe? or colorize the rows?)
+//2) handle different logging formats, changes to the logging
 
 namespace HomeServerConsoleTab.WebLogs
 {
