@@ -181,12 +181,12 @@ namespace HomeServerConsoleTab.WebLogs
                             try
                             {
                                 IISLogEntry entry = new IISLogEntry(fields[eIdx.date], fields[eIdx.time],
-                                    fields[eIdx.cs_uri_stem], fields[eIdx.cs_uri_stem], fields[eIdx.c_ip]);
+                                    fields[eIdx.cs_uri_stem], fields[eIdx.cs_username], fields[eIdx.c_ip]);
                                 parsedLines.Add(entry);
                             }
                             catch (Exception ex)
                             {
-                                MyLogger.Log(EventLogEntryType.Warning, "Error when parsing line: " + line);
+                                MyLogger.Log(EventLogEntryType.Warning, "Error when parsing line: " + line + "\n" + ex.Message);
                             }
                             max--;
                         }

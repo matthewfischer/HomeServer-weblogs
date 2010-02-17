@@ -218,35 +218,35 @@ namespace HomeServerConsoleTab.WebLogs
 
         #region RowHideShow
 
-        private void HideLocalNetworkRows()
-        {
-            int i=0;
-            logBinding.SuspendBinding();
-            foreach (DataGridViewRow r in logEntries.Tables["Logs"].Rows)
-            {
-                i++;
-                try
-                {
-                    string ip = r.Cells["IP"].ToString();
-                    if (ip.Equals(LOCALHOST))
-                    {
-                        MyLogger.DebugLog("IP = Localhost");
-                        continue;
-                    }
-                    else if (!IPAddressExtensions.GetInstance().IsLocalAddress(IPAddress.Parse(ip)))
-                    {
-                        MyLogger.DebugLog("IP " + ip + " is on local subnet");
-                        //dataGridView1.Rows[i].Visible = false;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MyLogger.DebugLog(ex.Message);
-                }
-            }
-            logBinding.ResumeBinding();
-            dataGridView1.Refresh();
-        }
+        //private void HideLocalNetworkRows()
+        //{
+        //    int i=0;
+        //    logBinding.SuspendBinding();
+        //    foreach (DataGridViewRow r in logEntries.Tables["Logs"].Rows)
+        //    {
+        //        i++;
+        //        try
+        //        {
+        //            string ip = r.Cells["IP"].ToString();
+        //            if (ip.Equals(LOCALHOST))
+        //            {
+        //                MyLogger.DebugLog("IP = Localhost");
+        //                continue;
+        //            }
+        //            else if (!IPAddressExtensions.GetInstance().IsLocalAddress(IPAddress.Parse(ip)))
+        //            {
+        //                MyLogger.DebugLog("IP " + ip + " is on local subnet");
+        //                //dataGridView1.Rows[i].Visible = false;
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MyLogger.DebugLog(ex.Message);
+        //        }
+        //    }
+        //    logBinding.ResumeBinding();
+        //    dataGridView1.Refresh();
+        //}
 
         private void MarkIPButtons()
         {
@@ -335,10 +335,10 @@ namespace HomeServerConsoleTab.WebLogs
             MyLogger.DebugLog("filter = " + filter);
             logBinding.Filter = filter;
 
-            if (localNetworkCheckBox.Checked)
-            {
-                HideLocalNetworkRows();
-            }
+            //if (localNetworkCheckBox.Checked)
+            //{
+            //    HideLocalNetworkRows();
+            //}
            
             cm.ResumeBinding();
             dataGridView1.ResumeLayout();

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product
-      Name="Web Logs - BETA - Do not redistribute"
+      Name="Web Logs"
       Id="25FF2855-1B50-463A-905F-21AAFF03F1D1"
       UpgradeCode="92EBA47A-A226-40FA-B616-896C7794F5AC"
       Manufacturer="Matt Fischer"

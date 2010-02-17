@@ -13,15 +13,11 @@ using System.Diagnostics;
 //1) background color of the checkboxes
 //2) have blocked sites dialog return a value if something changes and only re-draw then.
 
-//1.0.6.0
-//-------
-//1) fix hide local subnet
-//2) hide router tests
-//3) handle MC 3.0 calls
-
 //Future ideas:
+//1) fix hide local subnet
 //1) show the http status (tool tip somewhere maybe? or colorize the rows?)
 //2) handle different logging formats, changes to the logging
+//pop-up when required log pieces are missing
 
 namespace HomeServerConsoleTab.WebLogs
 {

@@ -212,8 +212,8 @@ namespace HomeServerConsoleTab.WebLogs
             // localNetworkCheckBox
             // 
             this.localNetworkCheckBox.AutoSize = true;
-            this.localNetworkCheckBox.Checked = true;
-            this.localNetworkCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.localNetworkCheckBox.Enabled = false;
+            this.localNetworkCheckBox.ForeColor = System.Drawing.SystemColors.ButtonShadow;
             this.localNetworkCheckBox.Location = new System.Drawing.Point(339, 34);
             this.localNetworkCheckBox.Name = "localNetworkCheckBox";
             this.localNetworkCheckBox.Size = new System.Drawing.Size(126, 17);
