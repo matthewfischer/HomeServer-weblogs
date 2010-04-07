@@ -19,7 +19,10 @@ namespace HomeServerConsoleTab.WebLogs
         
         public BlockedSitesForm()
         {
-            InitializeComponent();          
+            InitializeComponent();
+
+            //Default = Cancel means no changes, we don't re-draw the main window.
+            this.DialogResult = DialogResult.Cancel;  
         }
 
         private void InitializeData()
@@ -92,6 +95,9 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void unblockAllButton_Click(object sender, EventArgs e)
         {
+            //Something has changed, notify the called.
+            this.DialogResult = DialogResult.OK;
+
             BlockedIPs.GetInstance().UnblockAllIPs();
             InitializeData();
         }
@@ -100,6 +106,9 @@ namespace HomeServerConsoleTab.WebLogs
         {          
             if (dataGridView1.Columns[e.ColumnIndex].Name == "Unblock")
             {
+                //Something has changed, notify the called.
+                this.DialogResult = DialogResult.OK;
+
                 BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString());
                 InitializeData();
             }

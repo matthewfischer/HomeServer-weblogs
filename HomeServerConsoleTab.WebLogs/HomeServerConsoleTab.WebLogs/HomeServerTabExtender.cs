@@ -10,14 +10,20 @@ using System.IO;
 using System.Diagnostics;
 
 //Stuff to Fix:
-//1) background color of the checkboxes
-//2) have blocked sites dialog return a value if something changes and only re-draw then.
+//fix http status colorize on sort
+//fix hide local subnet
 
-//Future ideas:
-//1) fix hide local subnet
-//1) show the http status (tool tip somewhere maybe? or colorize the rows?)
-//2) handle different logging formats, changes to the logging
-//pop-up when required log pieces are missing
+//Fixed:
+//have blocked sites dialog return a value if something changes and only re-draw then.
+//pop-up when required log pieces are missing - DONE
+//progress bar on load is not on the right hand side
+//fix the color background on controls
+//show the http status (colorize the rows?)
+//http status sets the tooltip
+
+//Testing
+//test to see that blocked IP buttons are correct on load
+//get some test log files that dont have sc_status set
 
 namespace HomeServerConsoleTab.WebLogs
 {

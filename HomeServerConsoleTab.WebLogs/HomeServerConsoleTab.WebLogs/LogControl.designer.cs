@@ -199,6 +199,7 @@ namespace HomeServerConsoleTab.WebLogs
             // localhostCheckBox
             // 
             this.localhostCheckBox.AutoSize = true;
+            this.localhostCheckBox.BackColor = System.Drawing.Color.Transparent;
             this.localhostCheckBox.Checked = true;
             this.localhostCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.localhostCheckBox.Location = new System.Drawing.Point(472, 34);
@@ -206,12 +207,13 @@ namespace HomeServerConsoleTab.WebLogs
             this.localhostCheckBox.Size = new System.Drawing.Size(103, 17);
             this.localhostCheckBox.TabIndex = 2;
             this.localhostCheckBox.Text = "Hide Localhost?";
-            this.localhostCheckBox.UseVisualStyleBackColor = true;
+            this.localhostCheckBox.UseVisualStyleBackColor = false;
             this.localhostCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // localNetworkCheckBox
             // 
             this.localNetworkCheckBox.AutoSize = true;
+            this.localNetworkCheckBox.BackColor = System.Drawing.Color.Transparent;
             this.localNetworkCheckBox.Enabled = false;
             this.localNetworkCheckBox.ForeColor = System.Drawing.SystemColors.ButtonShadow;
             this.localNetworkCheckBox.Location = new System.Drawing.Point(339, 34);
@@ -219,18 +221,19 @@ namespace HomeServerConsoleTab.WebLogs
             this.localNetworkCheckBox.Size = new System.Drawing.Size(126, 17);
             this.localNetworkCheckBox.TabIndex = 3;
             this.localNetworkCheckBox.Text = "Hide Local Network?";
-            this.localNetworkCheckBox.UseVisualStyleBackColor = true;
+            this.localNetworkCheckBox.UseVisualStyleBackColor = false;
             this.localNetworkCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // anonymousCheckBox
             // 
             this.anonymousCheckBox.AutoSize = true;
+            this.anonymousCheckBox.BackColor = System.Drawing.Color.Transparent;
             this.anonymousCheckBox.Location = new System.Drawing.Point(220, 34);
             this.anonymousCheckBox.Name = "anonymousCheckBox";
             this.anonymousCheckBox.Size = new System.Drawing.Size(112, 17);
             this.anonymousCheckBox.TabIndex = 4;
             this.anonymousCheckBox.Text = "Hide Anonymous?";
-            this.anonymousCheckBox.UseVisualStyleBackColor = true;
+            this.anonymousCheckBox.UseVisualStyleBackColor = false;
             this.anonymousCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // statusStrip1
@@ -238,9 +241,11 @@ namespace HomeServerConsoleTab.WebLogs
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripProgressBar1});
+            this.statusStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.statusStrip1.Location = new System.Drawing.Point(0, 540);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(982, 22);
+            this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 8;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -290,6 +295,7 @@ namespace HomeServerConsoleTab.WebLogs
             // mediaCollectorCheckBox
             // 
             this.mediaCollectorCheckBox.AutoSize = true;
+            this.mediaCollectorCheckBox.BackColor = System.Drawing.Color.Transparent;
             this.mediaCollectorCheckBox.Checked = true;
             this.mediaCollectorCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mediaCollectorCheckBox.Location = new System.Drawing.Point(582, 34);
@@ -297,7 +303,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.mediaCollectorCheckBox.Size = new System.Drawing.Size(130, 17);
             this.mediaCollectorCheckBox.TabIndex = 9;
             this.mediaCollectorCheckBox.Text = "Hide Media Collector?";
-            this.mediaCollectorCheckBox.UseVisualStyleBackColor = true;
+            this.mediaCollectorCheckBox.UseVisualStyleBackColor = false;
             this.mediaCollectorCheckBox.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // textBox1
@@ -313,7 +319,9 @@ namespace HomeServerConsoleTab.WebLogs
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
             this.label1.Location = new System.Drawing.Point(3, 35);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(128, 13);
             this.label1.TabIndex = 11;
@@ -321,17 +329,22 @@ namespace HomeServerConsoleTab.WebLogs
             // 
             // blockList
             // 
-            this.blockList.Location = new System.Drawing.Point(872, 34);
+            this.blockList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.blockList.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.blockList.Location = new System.Drawing.Point(872, 30);
             this.blockList.Name = "blockList";
             this.blockList.Size = new System.Drawing.Size(107, 23);
             this.blockList.TabIndex = 12;
             this.blockList.Text = "List Blocked IPs";
-            this.blockList.UseVisualStyleBackColor = true;
+            this.blockList.UseVisualStyleBackColor = false;
             this.blockList.Click += new System.EventHandler(this.blockList_Click);
             // 
             // hideRouterTests
             // 
             this.hideRouterTests.AutoSize = true;
+            this.hideRouterTests.BackColor = System.Drawing.Color.Transparent;
             this.hideRouterTests.Checked = true;
             this.hideRouterTests.CheckState = System.Windows.Forms.CheckState.Checked;
             this.hideRouterTests.Location = new System.Drawing.Point(718, 34);
@@ -339,7 +352,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.hideRouterTests.Size = new System.Drawing.Size(118, 17);
             this.hideRouterTests.TabIndex = 13;
             this.hideRouterTests.Text = "Hide Router Tests?";
-            this.hideRouterTests.UseVisualStyleBackColor = true;
+            this.hideRouterTests.UseVisualStyleBackColor = false;
             this.hideRouterTests.CheckedChanged += new System.EventHandler(this.HideOrShowRows);
             // 
             // LogControl

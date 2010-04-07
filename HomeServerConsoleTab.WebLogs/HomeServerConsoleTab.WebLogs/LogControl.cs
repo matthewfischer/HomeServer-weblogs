@@ -107,6 +107,7 @@ namespace HomeServerConsoleTab.WebLogs
             row["Date"] = parser.ParseIISDateTime(entry.date, entry.time);
             row["User"] = entry.cs_username;
             row["URIStem"] = entry.cs_uri_stem;
+            row["HTTPStatus"] = entry.sc_status;
 
             if (BlockedIPs.GetInstance().IsThisIPBlocked(entry.c_ip))
             {
@@ -131,6 +132,7 @@ namespace HomeServerConsoleTab.WebLogs
             logDataTable.Columns.Add("User", typeof(string));
             logDataTable.Columns.Add("URIStem", typeof(string));
             logDataTable.Columns.Add("Block", typeof(string));
+            logDataTable.Columns.Add("HTTPStatus", typeof(int));
 
             logData.Tables.Add(logDataTable);
 
@@ -180,6 +182,17 @@ namespace HomeServerConsoleTab.WebLogs
                 return;
             }
 
+            HideOrShowRows();
+
+            logBinding.SuspendBinding();
+            
+            //show the Block/Unblock IP buttons in their correct state
+            MarkIPButtons();
+
+            //show the http status format
+            MarkHttpStatus();
+            logBinding.ResumeBinding();
+
             toolStripProgressBar1.Visible = false;
             toolStripProgressBar1.Enabled = false;
             consoleToolBarButton1.Enabled = true;
@@ -187,7 +200,7 @@ namespace HomeServerConsoleTab.WebLogs
             this.UseWaitCursor = false;
             this.Cursor = Cursors.Default;
 
-            HideOrShowRows();
+            dataGridView1.Refresh();
         }
 
         private void LogControl_Load(object sender, EventArgs e)
@@ -247,6 +260,49 @@ namespace HomeServerConsoleTab.WebLogs
         //    logBinding.ResumeBinding();
         //    dataGridView1.Refresh();
         //}
+
+        private void MarkHttpStatus()
+        {
+            foreach (DataGridViewRow dataGridViewRow in dataGridView1.Rows)
+            {
+                int httpStatus = (int)dataGridViewRow.Cells["HTTPStatus"].Value;
+
+                //unauthorized
+                if (httpStatus == (int)HttpStatusCode.Unauthorized)
+                {
+                    HttpStatusCode status = (HttpStatusCode)httpStatus;
+                    dataGridViewRow.Cells["IP"].ToolTipText = "HTTP Status = " + status.ToString() + " (" + status + ")";
+                    dataGridViewRow.DefaultCellStyle.BackColor = Color.Tomato;
+                }
+                //forbidden or not found
+                else if ((httpStatus == (int)HttpStatusCode.Forbidden) || (httpStatus == (int)HttpStatusCode.NotFound))
+                {
+                    HttpStatusCode status = (HttpStatusCode)httpStatus;
+                    dataGridViewRow.Cells["IP"].ToolTipText = "HTTP Status = " + status.ToString() + " (" + status + ")";
+                    dataGridViewRow.DefaultCellStyle.BackColor = Color.Yellow;
+                }
+                else
+                {
+                    dataGridViewRow.DefaultCellStyle.BackColor = Color.White;
+                }
+            }
+        }
+
+        private void MarkIPButtonsAndRefresh()
+        {
+            foreach (DataRow r in logEntries.Tables["Logs"].Rows)
+            {
+                //set the button name.              
+                if (BlockedIPs.GetInstance().IsThisIPBlocked(r["IP"].ToString()) == true)
+                {
+                    r["Block"] = UNBLOCK_IP;
+                }
+                else
+                {
+                    r["Block"] = BLOCK_IP;
+                }
+            }
+        }
 
         private void MarkIPButtons()
         {
@@ -378,14 +434,14 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 if (BlockedIPs.GetInstance().BlockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-                    MarkIPButtons();
+                    MarkIPButtonsAndRefresh();
                 }
             }
             else if (dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString() == UNBLOCK_IP)
             {
                 if (BlockedIPs.GetInstance().UnblockIP(dataGridView1.Rows[e.RowIndex].Cells["IP"].Value.ToString()))
                 {
-                    MarkIPButtons();
+                    MarkIPButtonsAndRefresh();
                 }
             }
         }
@@ -406,9 +462,15 @@ namespace HomeServerConsoleTab.WebLogs
 
         private void blockList_Click(object sender, EventArgs e)
         {
+            DialogResult dr = new DialogResult();
             BlockedSitesForm bs = new BlockedSitesForm();
-            bs.ShowDialog();
-            MarkIPButtons();
+            dr = bs.ShowDialog();
+
+            //okay means a change occurred.
+            if (dr == DialogResult.OK)
+            {
+                MarkIPButtonsAndRefresh();
+            }
         }
 
         #endregion

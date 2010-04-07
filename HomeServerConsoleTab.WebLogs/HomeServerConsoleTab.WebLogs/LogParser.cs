@@ -4,6 +4,8 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.HomeServer.Controls;
+using System.Windows.Forms;
 
 namespace HomeServerConsoleTab.WebLogs
 {
@@ -144,9 +146,18 @@ namespace HomeServerConsoleTab.WebLogs
                 {
                     eIdx.cs_username = i;
                 }
+                else if (fields[i].Equals(IISLogEntryIndex.SC_STATUS))
+                {
+                    MyLogger.Log(EventLogEntryType.Warning, "Found sc_status at index " + i);
+                    eIdx.sc_status = i;
+                }
             }
         }
 
+        /// <summary>
+        /// Returns true if all the required fields are set, optional fields don't count
+        /// </summary>
+        /// <returns></returns>
         public bool AreIndexesSet()
         {
             return ((eIdx.c_ip != -1) && (eIdx.cs_uri_stem != -1) && (eIdx.cs_username != -1)
@@ -180,8 +191,14 @@ namespace HomeServerConsoleTab.WebLogs
                             string[] fields = line.Split(' ');
                             try
                             {
+                                string sc_status = String.Empty;
+                                if (eIdx.sc_status >= 0)
+                                {
+                                    sc_status = fields[eIdx.sc_status];
+                                }
                                 IISLogEntry entry = new IISLogEntry(fields[eIdx.date], fields[eIdx.time],
-                                    fields[eIdx.cs_uri_stem], fields[eIdx.cs_username], fields[eIdx.c_ip]);
+                                    fields[eIdx.cs_uri_stem], fields[eIdx.cs_username], fields[eIdx.c_ip], 
+                                    sc_status);
                                 parsedLines.Add(entry);
                             }
                             catch (Exception ex)
@@ -192,9 +209,11 @@ namespace HomeServerConsoleTab.WebLogs
                         }
                         else
                         {
-                            //XXX - a pop-up would be helpful here.
-                            MyLogger.Log(EventLogEntryType.Error, "File is missing critical fields or there was an earlier error in"
-                             + " parsing field headers.  File = " + log.FullName);
+                            string message = "File is missing critical fields or there was an earlier error in"
+                             + " parsing field headers.  File = " + log.FullName;
+                            QMessageBox.Show(message + "\n  Please report this to matt+whs@mattfischer.com and send the file mentioned if possible",
+                                "Log File Format Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MyLogger.Log(EventLogEntryType.Error, message);
                         }
                     }
                     line = SR.ReadLine();

@@ -30,4 +30,7 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
+  <PropertyGroup>
+    <PreBuildEvent>del WebLogsInstaller.msi</PreBuildEvent>
+  </PropertyGroup>
 </Project>
