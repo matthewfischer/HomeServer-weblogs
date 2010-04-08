@@ -44,6 +44,10 @@ namespace HomeServerConsoleTab.WebLogs
         private IConsoleServices m_CS;
         private DataSet logEntries = null;
 
+        DataGridViewCellStyle RedCellStyle = new DataGridViewCellStyle();
+        DataGridViewCellStyle YellowCellStyle = new DataGridViewCellStyle();
+        DataGridViewCellStyle NormalCellStyle = new DataGridViewCellStyle();
+
         #region Initialization
 
         public LogControl(IConsoleServices cs)
@@ -53,6 +57,14 @@ namespace HomeServerConsoleTab.WebLogs
             ReadRegistryEntries();
             SetupIPBlocking();
             dataGridView1.Columns["Date"].DefaultCellStyle.Format = "G";
+            DefineCellStyles();
+        }
+
+        private void DefineCellStyles()
+        {
+            RedCellStyle.BackColor = Color.Red;
+            YellowCellStyle.BackColor = Color.Yellow;
+            NormalCellStyle.BackColor = Color.White;
         }
 
         private void ReadRegistryEntries()
@@ -184,14 +196,9 @@ namespace HomeServerConsoleTab.WebLogs
 
             HideOrShowRows();
 
-            logBinding.SuspendBinding();
-            
+    
             //show the Block/Unblock IP buttons in their correct state
             MarkIPButtons();
-
-            //show the http status format
-            MarkHttpStatus();
-            logBinding.ResumeBinding();
 
             toolStripProgressBar1.Visible = false;
             toolStripProgressBar1.Enabled = false;
@@ -271,19 +278,19 @@ namespace HomeServerConsoleTab.WebLogs
                 if (httpStatus == (int)HttpStatusCode.Unauthorized)
                 {
                     HttpStatusCode status = (HttpStatusCode)httpStatus;
-                    dataGridViewRow.Cells["IP"].ToolTipText = "HTTP Status = " + status.ToString() + " (" + status + ")";
-                    dataGridViewRow.DefaultCellStyle.BackColor = Color.Tomato;
+                    dataGridViewRow.Cells["IP"].ToolTipText = "HTTP Status = " + status.ToString() + " (" + httpStatus + ")";
+                    dataGridViewRow.DefaultCellStyle = RedCellStyle;
                 }
                 //forbidden or not found
                 else if ((httpStatus == (int)HttpStatusCode.Forbidden) || (httpStatus == (int)HttpStatusCode.NotFound))
                 {
                     HttpStatusCode status = (HttpStatusCode)httpStatus;
-                    dataGridViewRow.Cells["IP"].ToolTipText = "HTTP Status = " + status.ToString() + " (" + status + ")";
-                    dataGridViewRow.DefaultCellStyle.BackColor = Color.Yellow;
+                    dataGridViewRow.Cells["IP"].ToolTipText = "HTTP Status = " + status.ToString() + " (" + httpStatus + ")";
+                    dataGridViewRow.DefaultCellStyle = YellowCellStyle;
                 }
                 else
                 {
-                    dataGridViewRow.DefaultCellStyle.BackColor = Color.White;
+                    dataGridViewRow.DefaultCellStyle = NormalCellStyle;
                 }
             }
         }
@@ -516,6 +523,11 @@ namespace HomeServerConsoleTab.WebLogs
             {
                 this.Enabled = false;
             }
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            MarkHttpStatus();
         }
     }
 }

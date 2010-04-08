@@ -21,10 +21,6 @@ using System.Diagnostics;
 //show the http status (colorize the rows?)
 //http status sets the tooltip
 
-//Testing
-//test to see that blocked IP buttons are correct on load
-//get some test log files that dont have sc_status set
-
 namespace HomeServerConsoleTab.WebLogs
 {
     public class HomeServerTabExtender : IConsoleTab
